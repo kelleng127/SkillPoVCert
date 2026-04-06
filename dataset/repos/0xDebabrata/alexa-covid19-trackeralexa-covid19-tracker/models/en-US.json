@@ -38,6 +38,39 @@
                         "what is the update on coronavirus",
                         "what is the latest on coronavirus in {country}"
                     ]
+                },
+                {
+                    "name": "NoExitIntent",
+                    "slots": [],
+                    "samples": [
+                        "no",
+                        "no exit",
+                        "exit"
+                    ]
+                },
+                {
+                    "name": "EnterSkillIntent",
+                    "slots": [],
+                    "samples": [
+                        "yes",
+                        "yes continue",
+                        "continue",
+                        "i don't want to know"
+                    ]
+                },
+                {
+                    "name": "WantKnowIntent",
+                    "slots": [],
+                    "samples": [
+                        "i want to know"
+                    ]
+                },
+                {
+                    "name": "DataCollectionIntent",
+                    "slots": [],
+                    "samples": [
+                        "tell me what data is collected"
+                    ]
                 }
             ],
             "types": []

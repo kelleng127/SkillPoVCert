@@ -4,8 +4,8 @@ from path import final_path, data_collection_results_path
 
 def chatgpt_summarize(content, folder_path, filename):
     # place your openai api key here
-    openai.api_key = ''
-    
+    openai.api_key = 'YOUR_API_KEY_HERE'
+
     messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
     message = "If my input is 'data collection during conversation: birthday, data collection during conversation: age, data collection during conversation: address, ', \
                Your ouptut should be 'This skill will collect your birthday, age and address during the conversation.'\

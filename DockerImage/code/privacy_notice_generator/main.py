@@ -23,8 +23,9 @@ if __name__ == "__main__":
     print(f"chatGpt output starts")
     chatGPT_summary.generate_chatgpt_output()
     print(f"chatGpt output ends")
-    print(f"Generating new index_new.js files")
-    modify_index_js.search_and_replace()
-    print(f"Generating new index_new.js files")
-    modify_json_code.modify_json_code()
+    # print(f"Generating new index_new.js files")
+    # modify_index_js.search_and_replace()
+    # print(f"Generating new index_new.js files")
+    # modify_json_code.modify_json_code()
+    
 

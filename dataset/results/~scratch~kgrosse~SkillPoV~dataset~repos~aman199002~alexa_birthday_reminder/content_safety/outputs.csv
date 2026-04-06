@@ -1,0 +1,8 @@
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,You just triggered ${intentName}
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,"Thanks, I'll remember that you were born ${month} ${day} ${year}."
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,"I was born 14th Feb, 2012. When were you born?"
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,"Hello Aman, you are welcome. What is your birthday?"
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,~~~~ Error handled: ${error.stack}
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,"Sorry, I had trouble doing what you asked. Please try again."
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js,You can say hello to me! How can I help?
+/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/util.js,Util.s3PreSignedUrl: ${s3ObjectKey} URL ${s3PreSignedUrl}

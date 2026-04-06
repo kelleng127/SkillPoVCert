@@ -1,0 +1,20 @@
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/scraper.js,https://www.worldometers.info/coronavirus/
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/scraper.js,Not available
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,. The number of coronavirus related deaths are unavailable
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,How can I help?
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,"Sorry, I can\"
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,Welcome to corona update.
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,There have been a total of 
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,Error handled: ${error.message}
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,Not available
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,You can introduce yourself by telling me your name
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,. 
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js, people have died.
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,What would you like to do?
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,Sorry. I could not find the required information. Please try again
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,Session ended with reason: ${handlerInput.requestEnvelope.request.reason}
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js, coronavirus related cases in 
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/index.js,"Sorry, I cannot get the data right now. Try again!"
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/helpers/dbHelper.js,GetItem succeeded:
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/helpers/dbHelper.js,#country = :country
+/scratch/kgrosse/SkillPoV/dataset/repos/0xDebabrata/alexa-covid19-trackeralexa-covid19-tracker/lambda/custom/helpers/dbHelper.js,Unable to read item. Error JSON:

@@ -1,56 +1,89 @@
 {
-  "interactionModel": {
-    "languageModel": {
-      "invocationName": "personal information",
-      "intents": [
-        {
-          "name": "AMAZON.NavigateHomeIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.CancelIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.HelpIntent",
-          "samples": []
-        },
-        {
-          "name": "AMAZON.StopIntent",
-          "samples": []
-        },
-        {
-          "name": "GreetMeIntent",
-          "slots": [],
-          "samples": [
-            "name",
-            "what\u0027s my name",
-            "what is my name"
-          ]
-        },
-        {
-          "name": "EmailIntent",
-          "slots": [],
-          "samples": [
-            "email",
-            "what is my email",
-            "what\u0027s my email address"
-          ]
-        },
-        {
-          "name": "MobileIntent",
-          "slots": [],
-          "samples": [
-            "mobile",
-            "phone",
-            "mobile number",
-            "what is my mobile number",
-            "what is my phone number"
-          ]
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "personal information",
+            "intents": [
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "GreetMeIntent",
+                    "slots": [],
+                    "samples": [
+                        "name",
+                        "what's my name",
+                        "what is my name"
+                    ]
+                },
+                {
+                    "name": "EmailIntent",
+                    "slots": [],
+                    "samples": [
+                        "email",
+                        "what is my email",
+                        "what's my email address"
+                    ]
+                },
+                {
+                    "name": "MobileIntent",
+                    "slots": [],
+                    "samples": [
+                        "mobile",
+                        "phone",
+                        "mobile number",
+                        "what is my mobile number",
+                        "what is my phone number"
+                    ]
+                },
+                {
+                    "name": "NoExitIntent",
+                    "slots": [],
+                    "samples": [
+                        "no",
+                        "no exit",
+                        "exit"
+                    ]
+                },
+                {
+                    "name": "EnterSkillIntent",
+                    "slots": [],
+                    "samples": [
+                        "yes",
+                        "yes continue",
+                        "continue",
+                        "i don't want to know"
+                    ]
+                },
+                {
+                    "name": "WantKnowIntent",
+                    "slots": [],
+                    "samples": [
+                        "i want to know"
+                    ]
+                },
+                {
+                    "name": "DataCollectionIntent",
+                    "slots": [],
+                    "samples": [
+                        "tell me what data is collected"
+                    ]
+                }
+            ],
+            "types": []
         }
-      ],
-      "types": []
-    }
-  },
-  "version": "3"
+    },
+    "version": "3"
 }

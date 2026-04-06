@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Dataset outputs (too large, machine-specific)
+dataset/results/
+dataset/data_collection_results/
+dataset/labels/
+
+# Miniconda installer
+Miniconda3-latest-Linux-x86_64.sh

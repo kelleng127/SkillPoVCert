@@ -1,0 +1,3 @@
+permission data collection	name	
+permission data collection	email	
+permission data collection	number	

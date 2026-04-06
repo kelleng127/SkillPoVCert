@@ -1,0 +1,52 @@
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/emailSender.js,Email sent:
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Sorry, I couldn't understand what you said. Please try again."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Thanks ${userName}, I'll remember that you will start on ${month} ${day} ${year}."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,It looks like you don't have an email set. You can set your email from the Alexa companion app.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Your email is, ${profileEmail}"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,You just triggered ${intentName}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,It looks like you don't have an email set. You can set your email from the companion app.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Welcome ${userName}, when is your start date?"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Hello! Welcome to Amazon Intern Helper. What is your name?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Please enable profile permissions in the Amazon Alexa app.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Uh Oh. Looks like something went wrong.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Sorry, ${userName}, there was a problem with sending the email. Please try again later!"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Sorry, this is an invalid answer. Please try again."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,You can say hello to me! How can I help?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Template Seven
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Ok. I can send an email to Amazon for you to help you with this. Would you like that?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,~~~~ Error handled: ${error.message}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Thanks ${userName}, when is your start date?"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Alright, ${userName}, I've sent them an email! Hopefully you hear about it soon."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"OK, I will not contact them"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,When is your start date?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,"Thanks ${userName}, your start date is ${date.month} ${date.day}, ${date.year}."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,ll be starting at Amazon. When is your start date?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/index.js,Welcome back ${userName}. It looks like there are ${diffDays} days until your start date.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,Missing Manager Contact Info Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email from MyDocs
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email for NHO details.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me this info? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me details or help me get started with the check? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,CPT Letter Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email from Fragomen or BAL
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me some information related to my New Hire Orientation? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,Missing Graebel Relocation Information Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email for a Background Check from Accurate.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,MyDocs Information Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me my MyDocs-related details? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,"Hi, I\"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me any immigration-related materials I might be missing? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,NHO Details Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js, Could you send me this information? You can connect with me via {{emailAddress}} \nThanks!\n{{Name}}
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email containing my Amazon internship manager\ is contact info.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,Background Check Request
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/notificationStrings.js,t received an email from Graebel for Relocation Information.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,"t apply to you, please say Yes."
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,"${date.month} ${date.day}, ${date.year}"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,"By now, your background check should have been started. Did you receive a notice about it starting?"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,"By now, you should have received a MyDocs email. Have you already received it?"
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,There was a problem connecting to the service.
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,You should have been introduced to your manager and or team. Have you?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,You have nothing to worry about!
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/reminders.js,You should have received a note from Graebel in-regards to relocation. Have you?
+/scratch/kgrosse/SkillPoV/dataset/repos/3unyt/Alexa-Intern-Helper/lambda/util.js,Util.s3PreSignedUrl: ${s3ObjectKey} URL ${s3PreSignedUrl}

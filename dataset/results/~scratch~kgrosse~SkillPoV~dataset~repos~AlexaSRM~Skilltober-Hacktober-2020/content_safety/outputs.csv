@@ -1,0 +1,30 @@
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Hello. You can say: what's my name, what's my email, or, what's my phone number."
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Your email is, ${profileEmail}"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"say: what's my name, what's my email, or, what's my phone number."
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Your name is, ${profileName}"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Sorry, I can\"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Please enable profile permissions in the Amazon Alexa app.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Uh Oh. Looks like something went wrong.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Your mobile number is, ${profileMobile}"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,It looks like you don\'t have a mobile number set. You can set your mobile number from the companion app.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Error handled: ${error.message}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Template Seven
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,You can say hello to me!
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,"Your mobile number is, <say-as interpret-as=""telephone"">${profileMobile}</say-as>"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Session ended with reason: ${handlerInput.requestEnvelope.request.reason}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,Hello World
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,RESPONSE BUILDER = ${JSON.stringify(handlerInput)}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,REQUEST ENVELOPE = ${JSON.stringify(handlerInput.requestEnvelope)}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/index.js,It looks like you don\'t have an email set. You can set your email from the companion app.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,The TCP server will listen on a port that is free.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Connection from: ${socket.remoteAddress}:${socket.remotePort}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Starting server on port: ${localDebugger.address().port}.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Check logs to find out what port number is being used
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Port number has to be an integer - ${portNumberArgument}.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,"Port out of legal range: ${portNumberArgument}. The port number should be in the range [0, 65535]"
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Required argument - ${argumentName} not provided.
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,File not found: ${fileNameArgument}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Request envelope: ${JSON.stringify(body)}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,HTTP/1.1 200 OK${httpHeaderDelimeter}Content-Type: application/json;charset=UTF-8${httpHeaderDelimeter}Content-Length: ${response.length}${httpBodyDelimeter}${response}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/local-debugger.js,Response envelope: ${response}
+/scratch/kgrosse/SkillPoV/dataset/repos/AlexaSRM/Skilltober-Hacktober-2020/lambda/util.js,Util.s3PreSignedUrl: ${s3ObjectKey} URL ${s3PreSignedUrl}

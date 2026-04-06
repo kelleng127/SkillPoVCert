@@ -1,0 +1,1 @@
+data collection during conversation: name, permission data collection: name, permission data collection: email, 
