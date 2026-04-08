@@ -73,6 +73,7 @@ def read_skill_outputs(skill_name):
             outputs.append(row)
     return outputs
 
+#continue to read all outputs
 def get_all_outputs(skill_name):
     skill = json.loads(open(results_path + '/' + skill_name + '/skill.json').read())
     get_skill_outputs(skill)
