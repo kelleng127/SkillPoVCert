@@ -1,18 +1,14 @@
 """
 label_generator.py
 ------------------
-Reads SkillPoV pipeline outputs and generates an Apple-style privacy nutrition
-label PNG for each Alexa skill.
-
-Focus: Match permissions declared in skill.json manifest against data
-       collection practices extracted from skill source code by SkillPoV.
+Generates a certified privacy label PNG for each Alexa skill analyzed
+by the SkillPoV pipeline. Labels are based purely on backend code analysis —
+no manifest comparison, no privacy policy matching. The code is the truth.
 
 Pipeline:
   1. Read data_collection_results/final/<author>~~<skill>~~report.txt
-  2. Read dataset/results/<skill_folder>/skill.json -> manifest_file
-  3. Parse manifest for declared permissions
-  4. Send both to ChatGPT to get structured JSON comparing the two
-  5. Draw Apple-style label and save as PNG to dataset/labels/
+  2. Send to ChatGPT for structured JSON extraction of data practices
+  3. Draw a refined, visually polished privacy label and save as PNG
 
 Usage (from SkillPoV root):
     python3 DockerImage/code/label_generator.py
@@ -26,13 +22,13 @@ import sys
 import json
 import re
 import textwrap
+import math
 
 # ── path bootstrap ────────────────────────────────────────────────────────────
 _here        = os.path.dirname(os.path.abspath(__file__))
 _root        = os.path.dirname(os.path.dirname(os.path.dirname(_here)))
 _dataset     = os.path.join(_root, "dataset")
 FINAL_PATH   = os.path.join(_dataset, "data_collection_results", "final")
-RESULTS_PATH = os.path.join(_dataset, "results")
 LABELS_PATH  = os.path.join(_dataset, "labels")
 os.makedirs(LABELS_PATH, exist_ok=True)
 
@@ -42,64 +38,91 @@ try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from matplotlib.patches import FancyBboxPatch
+    import matplotlib.patches as mpatches
+    from matplotlib.patches import FancyBboxPatch, Circle
+    import matplotlib.patheffects as pe
+    from matplotlib.colors import LinearSegmentedColormap
+    import numpy as np
 except ImportError as e:
-    sys.exit(f"[ERROR] Missing dependency: {e}\n"
-             "Run:  pip install openai matplotlib")
+    sys.exit(
+        f"[ERROR] Missing dependency: {e}\n"
+        "Run:  pip install openai matplotlib numpy"
+    )
 
-# ── OpenAI key (read from chatGPT_summary.py) ────────────────────────────────
-_summary_py = os.path.join(_here, "privacy_notice_generator", "chatGPT_summary.py")
-openai.api_key = "'YOUR_API_KEY_HERE'"
-if os.path.exists(_summary_py):
+# ── OpenAI key ────────────────────────────────────────────────────────────────
+_summary_py = os.path.join(
+    _here, "privacy_notice_generator", "chatGPT_summary.py"
+)
+openai.api_key = os.environ.get("OPENAI_API_KEY", "")
+if not openai.api_key and os.path.exists(_summary_py):
     for line in open(_summary_py):
         if "api_key" in line and "=" in line:
-            m = re.search(r'["\']([sk]-[^"\']+)["\']', line)
+            m = re.search(r'["\']([sk]-[^"\']{20,})["\']', line)
             if m:
                 openai.api_key = m.group(1)
 if not openai.api_key:
-    sys.exit("[ERROR] OpenAI API key not found. Set it in chatGPT_summary.py line 6.")
-
-# ── permission -> friendly name map ──────────────────────────────────────────
-PERMISSION_MAP = {
-    "alexa::profile:name:read":                               "Full Name",
-    "alexa::profile:given_name:read":                         "First Name",
-    "alexa::profile:email:read":                              "Email Address",
-    "alexa::profile:mobile_number:read":                      "Phone Number",
-    "alexa::devices:all:address:full:read":                   "Device Address",
-    "alexa:devices:all:address:country_and_postal_code:read": "Postal Code",
-    "alexa::devices:all:geolocation:read":                    "Geolocation",
-    "alexa::alerts:reminders:skill:readwrite":                "Reminders",
-    "alexa::lists:read":                                      "Shopping/To-do Lists",
-    "alexa::lists:write":                                     "Shopping/To-do Lists (write)",
-}
-
-# permission API -> data type keyword (for matching)
-PERMISSION_DATA_TYPE = {
-    "alexa::profile:name:read":                               "name",
-    "alexa::profile:given_name:read":                         "name",
-    "alexa::profile:email:read":                              "email",
-    "alexa::profile:mobile_number:read":                      "number",
-    "alexa::devices:all:address:full:read":                   "address",
-    "alexa:devices:all:address:country_and_postal_code:read": "postal code",
-    "alexa::devices:all:geolocation:read":                    "location",
-    "alexa::alerts:reminders:skill:readwrite":                "reminder",
-    "alexa::lists:read":                                      "list",
-    "alexa::lists:write":                                     "list",
-}
-
-def friendly_permission(perm):
-    return PERMISSION_MAP.get(
-        perm, perm.split(":")[-1].replace("_", " ").title()
+    sys.exit(
+        "[ERROR] OpenAI API key not found.\n"
+        "Set OPENAI_API_KEY env var or add it to chatGPT_summary.py."
     )
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COLOUR PALETTE  —  deep navy + electric teal accent, warm white text
+# ─────────────────────────────────────────────────────────────────────────────
+P = {
+    "bg":           "#0D1117",   # near-black background
+    "surface":      "#161B22",   # card surface
+    "surface2":     "#21262D",   # elevated surface / row bg
+    "border":       "#30363D",   # subtle border
+    "accent":       "#00D4AA",   # electric teal — primary accent
+    "accent_dim":   "#004D3D",   # teal at low opacity
+    "blue":         "#388BFD",   # secondary accent (blue)
+    "blue_dim":     "#0D2A5C",
+    "warn":         "#E3B341",   # amber warning
+    "warn_dim":     "#3D2E00",
+    "danger":       "#F85149",   # red
+    "danger_dim":   "#3D0C0A",
+    "text":         "#E6EDF3",   # primary text
+    "text2":        "#8B949E",   # secondary text
+    "text3":        "#484F58",   # tertiary / disabled
+    "white":        "#FFFFFF",
+}
+
+# data-type → icon character (Unicode block elements / arrows)
+DATA_ICONS = {
+    "name":         "◈",
+    "email":        "✉",
+    "age":          "◷",
+    "birthday":     "◷",
+    "location":     "◎",
+    "address":      "◎",
+    "postal code":  "◎",
+    "zip code":     "◎",
+    "gender":       "◈",
+    "phone":        "✆",
+    "number":       "✆",
+    "income":       "◈",
+    "ssn":          "◈",
+    "ethnicity":    "◈",
+}
+
+def icon_for(dt):
+    dt_l = dt.lower()
+    for key, ico in DATA_ICONS.items():
+        if key in dt_l:
+            return ico
+    return "◆"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 1 – discover skills
 # ─────────────────────────────────────────────────────────────────────────────
 def discover_skills():
-    skills = []
     if not os.path.isdir(FINAL_PATH):
-        sys.exit(f"[ERROR] final/ folder not found at {FINAL_PATH}.\n"
-                 "Run scan_skills.py then main.py first.")
+        sys.exit(
+            f"[ERROR] final/ folder not found at {FINAL_PATH}.\n"
+            "Run scan_skills.py then main.py first."
+        )
+    skills = []
     for fname in os.listdir(FINAL_PATH):
         if not fname.endswith("~~report.txt"):
             continue
@@ -112,329 +135,378 @@ def discover_skills():
             "author":      author,
             "skill":       skill,
             "report_path": os.path.join(FINAL_PATH, fname),
-            "label_path":  os.path.join(LABELS_PATH,
-                                        f"{author}~~{skill}_label.png"),
+            "label_path":  os.path.join(
+                LABELS_PATH, f"{author}~~{skill}_label.png"
+            ),
         })
     return skills
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 2 – load permissions from manifest
-# ─────────────────────────────────────────────────────────────────────────────
-def load_permissions(author, skill):
-    permissions = []
-    for folder in os.listdir(RESULTS_PATH):
-        if author not in folder or skill not in folder:
-            continue
-        skill_json_path = os.path.join(RESULTS_PATH, folder, "skill.json")
-        if not os.path.exists(skill_json_path):
-            continue
-        try:
-            skill_data    = json.loads(open(skill_json_path).read())
-            manifest_file = skill_data.get("manifest_file", "")
-            if not manifest_file or not os.path.exists(manifest_file):
-                break
-            raw     = json.loads(open(manifest_file).read())
-            content = raw.get("manifest", raw.get("skillManifest", {}))
-            for p in content.get("permissions", []):
-                permissions.append(p.get("name", ""))
-        except Exception:
-            pass
-        break
-    return permissions
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STEP 3 – local matching (permissions vs extracted data collection)
-# ─────────────────────────────────────────────────────────────────────────────
-def match_permissions_to_collection(permissions, report_text):
-    """
-    For each permission declared in the manifest, check whether the
-    corresponding data type appears in the SkillPoV extraction report.
-    Returns three lists:
-        matched   - permissions whose data type was also found in code
-        unmatched - permissions declared but NOT found in code (over-declared)
-        code_only - data types found in code but NOT covered by any permission
-    """
-    report_lower = report_text.lower()
-
-    # data types found by SkillPoV in code
-    code_data_types = set()
-    known_types = ["name", "age", "email", "location", "address",
-                   "birthday", "gender", "number", "postal code",
-                   "zip code", "phone", "income", "ssn", "ethnicity"]
-    for dt in known_types:
-        if dt in report_lower:
-            code_data_types.add(dt)
-
-    matched   = []
-    unmatched = []
-    covered   = set()
-
-    for perm in permissions:
-        data_type = PERMISSION_DATA_TYPE.get(perm, "")
-        if data_type and any(data_type in c for c in code_data_types):
-            matched.append(perm)
-            covered.add(data_type)
-        else:
-            unmatched.append(perm)
-
-    # data types in code not covered by any permission
-    code_only = [dt for dt in code_data_types
-                 if not any(dt in PERMISSION_DATA_TYPE.get(p, "")
-                            for p in permissions)]
-
-    return matched, unmatched, code_only
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STEP 4 – ask ChatGPT for structured summary of extracted data types
+# STEP 2 – ChatGPT structured extraction
 # ─────────────────────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """
-You are a privacy analyst reviewing an Alexa skill data-collection report
-produced by static code analysis.
+You are a privacy analyst. Given a SkillPoV static-code-analysis report for
+an Amazon Alexa skill, extract structured privacy information.
 
-Return ONLY a JSON object with this exact schema (no markdown, no extra text):
+Return ONLY a valid JSON object — no markdown fences, no extra text:
 
 {
-  "data_types": ["list of specific data types collected via conversation, e.g. name, age, location"],
-  "collection_methods": ["conversation", "permission_api"],
-  "summary": "one sentence plain-English summary of what this skill collects"
+  "data_types": [
+    {
+      "name": "short data type label, e.g. Full Name",
+      "sensitivity": "low" | "medium" | "high",
+      "how": "one short phrase describing how it is collected, e.g. asked via conversation"
+    }
+  ],
+  "collection_methods": ["conversation" | "permission_api" | "inferred"],
+  "data_shared_with_third_parties": true | false,
+  "data_retained": true | false | "unknown",
+  "risk_level": "none" | "low" | "medium" | "high",
+  "summary": "2-3 sentence plain-English summary of what data this skill collects and why it matters to the user"
 }
 
-Be specific and concise. Only include data types explicitly evidenced in the report.
+Rules:
+- sensitivity high   = financial, biometric, SSN, health, precise location
+- sensitivity medium = name, email, phone, age, gender, postal code
+- sensitivity low    = general preferences, reminders, non-personal inputs
+- risk_level is an overall assessment combining data types and methods
+- Be concise. Only include what is evidenced in the report.
+- If nothing sensitive is collected, data_types may be an empty array and risk_level should be "none".
 """
 
-def ask_chatgpt(report_text, permissions):
-    perm_str = (", ".join(friendly_permission(p) for p in permissions)
-                if permissions else "none")
-    user_msg = (
-        f"DATA COLLECTION REPORT (from static code analysis):\n{report_text}\n\n"
-        f"PERMISSIONS DECLARED IN MANIFEST: {perm_str}"
-    )
+def ask_chatgpt(report_text):
     try:
         resp = openai.ChatCompletion.create(
             model    = "gpt-3.5-turbo",
             messages = [
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": user_msg},
+                {"role": "user",   "content": f"REPORT:\n{report_text}"},
             ],
-            timeout  = 30,
+            timeout  = 40,
         )
         raw = resp["choices"][0]["message"]["content"].strip()
         raw = re.sub(r"^```[a-z]*\n?", "", raw)
         raw = re.sub(r"\n?```$",        "", raw)
         return json.loads(raw)
-    except json.JSONDecodeError as e:
-        print(f"  [WARN] JSON parse error: {e}. Using defaults.")
     except Exception as e:
-        print(f"  [WARN] ChatGPT call failed: {e}. Using defaults.")
-
-    return {
-        "data_types":         [],
-        "collection_methods": [],
-        "summary":            "Analysis unavailable.",
-    }
+        print(f"  [WARN] ChatGPT error: {e}. Using safe defaults.")
+        return {
+            "data_types":                   [],
+            "collection_methods":           [],
+            "data_shared_with_third_parties": False,
+            "data_retained":                "unknown",
+            "risk_level":                   "unknown",
+            "summary":                      "Analysis could not be completed.",
+        }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 5 – draw the label
+# STEP 3 – draw the label
 # ─────────────────────────────────────────────────────────────────────────────
-C_BG     = "#1c1c1e"
-C_CARD   = "#2c2c2e"
-C_WHITE  = "#ffffff"
-C_GRAY   = "#8e8e93"
-C_BLUE   = "#0a84ff"
-C_GREEN  = "#30d158"
-C_RED    = "#ff453a"
-C_YELLOW = "#ffd60a"
-C_ORANGE = "#ff9f0a"
 
-def pill(ax, x, y, w, h, color, radius=0.15, alpha=1.0):
-    box = FancyBboxPatch(
-        (x, y), w, h,
-        boxstyle=f"round,pad=0,rounding_size={radius}",
-        facecolor=color, edgecolor="none", alpha=alpha,
-        transform=ax.transData, zorder=2,
-    )
-    ax.add_patch(box)
-
-def draw_label(skill_name, author, analysis, permissions,
-               matched, unmatched, code_only, out_path):
-
-    fig_w, fig_h = 7, 11
-    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
-    fig.patch.set_facecolor(C_BG)
-    ax.set_facecolor(C_BG)
-    ax.set_xlim(0, fig_w)
-    ax.set_ylim(0, fig_h)
+def draw_label(skill_name, author, analysis, out_path):
+    # ── canvas ────────────────────────────────────────────────────────────────
+    W, H = 8.5, 11.5          # inches
+    DPI  = 160
+    fig  = plt.figure(figsize=(W, H), facecolor=P["bg"])
+    ax   = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, W)
+    ax.set_ylim(0, H)
+    ax.set_facecolor(P["bg"])
     ax.axis("off")
 
-    pad   = 0.35
-    inner = fig_w - 2 * pad
+    # ── layout constants ──────────────────────────────────────────────────────
+    ML   = 0.42      # margin left
+    MR   = W - 0.42  # margin right
+    CW   = MR - ML   # content width
+    y    = H - 0.45  # cursor (top → bottom)
 
-    def txt(x, y, s, **kw):
-        kw.setdefault("color", C_WHITE)
-        kw.setdefault("va", "top")
-        kw.setdefault("fontsize", 9)
-        ax.text(x, y, s, transform=ax.transData, zorder=3, **kw)
+    # ── helpers ───────────────────────────────────────────────────────────────
+    def t(x, yy, s, size=9, color=P["text"], weight="normal",
+          align="left", style="normal", alpha=1.0, zorder=4):
+        ax.text(x, yy, s,
+                fontsize=size, color=color, fontweight=weight,
+                ha=align, va="top", fontstyle=style,
+                alpha=alpha, zorder=zorder,
+                transform=ax.transData)
 
-    def hline(y):
-        ax.axhline(y, color=C_GRAY, linewidth=0.5, alpha=0.35,
-                   xmin=pad / fig_w, xmax=(fig_w - pad) / fig_w)
+    def rect(x, yy, w, h, color, alpha=1.0, radius=0.12, zorder=2):
+        box = FancyBboxPatch(
+            (x, yy - h), w, h,
+            boxstyle=f"round,pad=0,rounding_size={radius}",
+            facecolor=color, edgecolor="none",
+            alpha=alpha, zorder=zorder,
+            transform=ax.transData,
+        )
+        ax.add_patch(box)
 
-    def section_header(y, label):
-        txt(pad + 0.1, y, label,
-            fontsize=8, color=C_GRAY, fontweight="bold",
-            fontfamily="monospace")
-        return y - 0.30
+    def hrule(yy, color=P["border"], alpha=1.0):
+        ax.plot([ML, MR], [yy, yy],
+                color=color, linewidth=0.6, alpha=alpha,
+                zorder=3, solid_capstyle="round")
 
-    def chips_row(start_x, start_y, labels, color):
-        x, y = start_x, start_y
-        for label in labels:
-            est_w = len(label) * 0.115 + 0.35
-            if x + est_w > fig_w - pad:
-                x  = start_x
-                y -= 0.35
-            pill(ax, x, y - 0.24, est_w, 0.26, color, radius=0.10)
-            txt(x + 0.12, y - 0.05, label,
-                fontsize=8, color=C_WHITE, fontweight="bold")
-            x += est_w + 0.12
-        return y - 0.38
+    def section_label(yy, text):
+        t(ML, yy, text.upper(),
+          size=6.8, color=P["text3"], weight="bold")
+        return yy - 0.28
 
-    # ── HEADER ────────────────────────────────────────────────────────────────
-    y = fig_h - pad
-    pill(ax, pad, y - 0.62, inner, 0.72, C_CARD, radius=0.2)
-    txt(pad + 0.22, y - 0.10,
-        "Privacy Nutrition Label",
-        fontsize=10, color=C_GRAY, fontstyle="italic")
+    # ── subtle grid lines in background ───────────────────────────────────────
+    for gx in np.linspace(0, W, 18):
+        ax.plot([gx, gx], [0, H],
+                color=P["border"], linewidth=0.3, alpha=0.18, zorder=0)
+    for gy in np.linspace(0, H, 24):
+        ax.plot([0, W], [gy, gy],
+                color=P["border"], linewidth=0.3, alpha=0.18, zorder=0)
 
-    display = skill_name.replace("-", " ").replace("_", " ").title()
-    wrapped = textwrap.fill(display, width=34)
-    y -= 0.60
-    txt(pad + 0.22, y, wrapped,
-        fontsize=14, fontweight="bold", linespacing=1.3)
-    y -= 0.18 * (1 + wrapped.count("\n"))
-    txt(pad + 0.22, y - 0.05, f"by {author}",
-        fontsize=8.5, color=C_GRAY)
-    y -= 0.40
+    # ── accent bar — left edge ────────────────────────────────────────────────
+    ax.add_patch(plt.Rectangle(
+        (0, 0), 0.08, H,
+        facecolor=P["accent"], alpha=0.9, zorder=5,
+        transform=ax.transData,
+    ))
 
-    hline(y); y -= 0.22
+    # ══════════════════════════════════════════════════════════════════════════
+    # HEADER
+    # ══════════════════════════════════════════════════════════════════════════
+    rect(ML, y, CW, 1.55, P["surface"], radius=0.18)
 
-    # ── CONSISTENCY BADGE ─────────────────────────────────────────────────────
-    if len(permissions) == 0 and len(code_only) == 0:
-        badge_label = "✓  CONSISTENT  —  No Data Collection"
-        badge_sub   = ("No permissions requested and no data collection "
-                       "detected in code.")
-        badge_color = C_GREEN
-    elif len(unmatched) == 0 and len(code_only) == 0 and permissions:
-        badge_label = "✓  CONSISTENT"
-        badge_sub   = ("All declared permissions match data collection "
-                       "found in code.")
-        badge_color = C_GREEN
-    elif len(unmatched) > 0 and len(code_only) == 0:
-        badge_label = "⚠  OVER-DECLARED"
-        badge_sub   = ("Manifest declares permissions not evidenced "
-                       "in code.")
-        badge_color = C_YELLOW
-    elif len(code_only) > 0 and len(unmatched) == 0:
-        badge_label = "✗  UNDER-DECLARED"
-        badge_sub   = ("Code collects data not covered by any "
-                       "manifest permission.")
-        badge_color = C_RED
-    else:
-        badge_label = "✗  INCONSISTENT"
-        badge_sub   = ("Mismatches found between manifest permissions "
-                       "and code behavior.")
-        badge_color = C_RED
+    # "CERTIFIED PRIVACY LABEL" badge top-right
+    badge_x = MR - 0.15
+    t(badge_x, y - 0.14,
+      "SKILLCERT",
+      size=6.5, color=P["accent"], weight="bold", align="right")
+    t(badge_x, y - 0.30,
+      "CERTIFIED PRIVACY LABEL",
+      size=6, color=P["text3"], align="right")
 
-    pill(ax, pad, y - 0.52, inner, 0.62, badge_color, alpha=0.15, radius=0.2)
-    pill(ax, pad, y - 0.52, 0.07,  0.62, badge_color, radius=0.12)
-    txt(pad + 0.20, y - 0.06, badge_label,
-        fontsize=12, color=badge_color, fontweight="bold")
-    txt(pad + 0.20, y - 0.30,
-        textwrap.fill(badge_sub, width=54),
-        fontsize=8, color=C_GRAY, linespacing=1.3)
-    y -= 0.75
+    # skill name
+    display = skill_name.replace("-", " ").replace("_", " ")
+    # title-case each word
+    display = " ".join(w.capitalize() for w in display.split())
+    wrapped = textwrap.fill(display, width=28)
+    lines   = wrapped.count("\n") + 1
+    t(ML + 0.22, y - 0.18, wrapped,
+      size=20, color=P["text"], weight="bold")
 
-    hline(y); y -= 0.22
+    t(ML + 0.22, y - 0.22 - lines * 0.42,
+      f"by  {author}",
+      size=9, color=P["text2"], style="italic")
 
-    # ── SUMMARY ───────────────────────────────────────────────────────────────
-    y = section_header(y, "SKILL SUMMARY")
-    summary = textwrap.fill(analysis.get("summary", "N/A"), width=60)
-    txt(pad + 0.1, y, summary,
-        fontsize=9, color=C_WHITE, linespacing=1.4)
-    y -= 0.20 * (1 + summary.count("\n")) + 0.20
+    # risk pill top-left of header
+    risk      = analysis.get("risk_level", "unknown").lower()
+    risk_cfg  = {
+        "none":    (P["accent"],  P["accent_dim"],  "NO RISK"),
+        "low":     (P["accent"],  P["accent_dim"],  "LOW RISK"),
+        "medium":  (P["warn"],    P["warn_dim"],    "MEDIUM RISK"),
+        "high":    (P["danger"],  P["danger_dim"],  "HIGH RISK"),
+        "unknown": (P["text3"],   P["surface2"],    "UNKNOWN"),
+    }
+    rc, rc_dim, rl = risk_cfg.get(risk, risk_cfg["unknown"])
+    pill_x = MR - 1.52
+    pill_y = y - 0.92
+    rect(pill_x, pill_y + 0.30, 1.35, 0.34, rc_dim, radius=0.14)
+    ax.plot([pill_x, pill_x + 1.35], [pill_y + 0.30, pill_y + 0.30],
+            color=rc, linewidth=1.2, alpha=0.7,
+            solid_capstyle="round", zorder=3)
+    t(pill_x + 0.675, pill_y + 0.20,
+      f"● {rl}",
+      size=8.5, color=rc, weight="bold", align="center")
 
-    hline(y); y -= 0.22
+    y -= 1.72
+    hrule(y)
+    y -= 0.30
 
-    # ── DATA COLLECTED IN CODE ────────────────────────────────────────────────
-    y = section_header(y, "DATA COLLECTED  (detected in source code)")
+    # ══════════════════════════════════════════════════════════════════════════
+    # SUMMARY
+    # ══════════════════════════════════════════════════════════════════════════
+    y = section_label(y, "Privacy Summary")
+    summary = analysis.get("summary", "No summary available.")
+    wrapped_summary = textwrap.fill(summary, width=72)
+    lines_s = wrapped_summary.count("\n") + 1
+    t(ML, y, wrapped_summary,
+      size=9, color=P["text2"], style="italic")
+    y -= lines_s * 0.23 + 0.30
+
+    hrule(y)
+    y -= 0.30
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # DATA COLLECTED
+    # ══════════════════════════════════════════════════════════════════════════
+    y = section_label(y, "Data Collected  (detected via static code analysis)")
+
     data_types = analysis.get("data_types", [])
-    if data_types:
-        y = chips_row(pad + 0.1, y, [d.title() for d in data_types], C_BLUE)
+
+    if not data_types:
+        # green "no collection" banner
+        rect(ML, y + 0.06, CW, 0.52, P["accent_dim"], radius=0.12)
+        ax.plot([ML, ML + CW], [y + 0.06, y + 0.06],
+                color=P["accent"], linewidth=1.0, alpha=0.6,
+                solid_capstyle="round", zorder=3)
+        t(ML + CW / 2, y - 0.06,
+          "✓   No personal data collection detected",
+          size=10, color=P["accent"], weight="bold", align="center")
+        y -= 0.70
     else:
-        txt(pad + 0.1, y, "No personal data collection detected.",
-            color=C_GREEN)
-        y -= 0.35
+        # sensitivity colour map
+        sens_color = {
+            "high":   (P["danger"],  P["danger_dim"]),
+            "medium": (P["warn"],    P["warn_dim"]),
+            "low":    (P["blue"],    P["blue_dim"]),
+        }
+
+        ROW_H   = 0.54
+        COL     = CW / 2 - 0.10
+        n       = len(data_types)
+        rows    = math.ceil(n / 2)
+
+        for i, dt in enumerate(data_types):
+            col_idx = i % 2
+            row_idx = i // 2
+            rx = ML + col_idx * (COL + 0.20)
+            ry = y - row_idx * (ROW_H + 0.10)
+
+            sens  = dt.get("sensitivity", "low").lower()
+            fc, bc = sens_color.get(sens, sens_color["low"])
+
+            # row background
+            rect(rx, ry + 0.06, COL, ROW_H, bc, radius=0.12)
+            # left accent stripe
+            rect(rx, ry + 0.06, 0.06, ROW_H, fc, radius=0.08)
+
+            # icon
+            ico = icon_for(dt.get("name", ""))
+            t(rx + 0.16, ry - 0.04, ico,
+              size=13, color=fc)
+
+            # data type name
+            t(rx + 0.40, ry - 0.05,
+              dt.get("name", "Unknown").title(),
+              size=9.5, color=P["text"], weight="bold")
+
+            # how collected
+            how_text = textwrap.fill(
+                dt.get("how", ""), width=28
+            )
+            t(rx + 0.40, ry - 0.24,
+              how_text,
+              size=7.5, color=P["text2"])
+
+            # sensitivity badge
+            t(rx + COL - 0.08, ry - 0.08,
+              sens.upper(),
+              size=6.5, color=fc, weight="bold", align="right")
+
+        y -= rows * (ROW_H + 0.10) + 0.18
+
+    hrule(y)
+    y -= 0.30
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # COLLECTION METHODS
+    # ══════════════════════════════════════════════════════════════════════════
+    y = section_label(y, "Collection Methods")
 
     methods = analysis.get("collection_methods", [])
-    if methods:
-        txt(pad + 0.1, y,
-            "Via: " + ", ".join(m.replace("_", " ").title()
-                                for m in methods),
-            fontsize=8, color=C_GRAY, fontstyle="italic")
-        y -= 0.30
+    method_labels = {
+        "conversation":   ("◉", "Via Conversation",  "Skill asks the user directly during interaction"),
+        "permission_api": ("◈", "Alexa Permission",  "Accesses data via Alexa's permission API"),
+        "inferred":       ("◍", "Inferred",           "Data inferred from user behaviour"),
+    }
 
-    hline(y); y -= 0.22
-
-    # ── PERMISSIONS IN MANIFEST ───────────────────────────────────────────────
-    y = section_header(y, "PERMISSIONS DECLARED IN MANIFEST")
-    if permissions:
-        for perm in permissions:
-            friendly  = friendly_permission(perm)
-            is_match  = perm in matched
-            dot_color = C_GREEN if is_match else C_YELLOW
-            pill(ax, pad + 0.10, y - 0.20, 0.13, 0.22, dot_color, radius=0.08)
-            txt(pad + 0.33, y,       friendly,
-                fontsize=9, fontweight="bold")
-            txt(pad + 0.33, y - 0.18, perm,
-                fontsize=6.5, color=C_GRAY, fontstyle="italic")
-            match_label = "matched in code" if is_match else "not found in code"
-            txt(fig_w - pad - 0.1, y - 0.08, match_label,
-                fontsize=7.5,
-                color=C_GREEN if is_match else C_YELLOW,
-                ha="right")
-            y -= 0.44
-    else:
-        txt(pad + 0.1, y, "No permissions declared in manifest.",
-            color=C_GRAY)
+    if not methods:
+        t(ML, y, "No collection methods identified.",
+          size=9, color=P["text3"])
         y -= 0.35
-
-    hline(y); y -= 0.22
-
-    # ── UNDECLARED COLLECTION ─────────────────────────────────────────────────
-    y = section_header(y, "UNDECLARED DATA COLLECTION  (in code, no permission)")
-    if code_only:
-        y = chips_row(pad + 0.1, y,
-                      [d.title() for d in code_only], C_RED)
-        txt(pad + 0.1, y,
-            "These data types were found in code but have no\n"
-            "corresponding permission declared in the manifest.",
-            fontsize=8, color=C_GRAY, linespacing=1.4)
-        y -= 0.42
     else:
-        txt(pad + 0.1, y,
-            "All detected data collection is covered by manifest permissions.",
-            color=C_GREEN)
-        y -= 0.35
+        MET_W = (CW - 0.20 * (len(methods) - 1)) / max(len(methods), 1)
+        MET_W = min(MET_W, 2.6)
+        for i, m in enumerate(methods):
+            ico, label, desc = method_labels.get(
+                m, ("◆", m.replace("_", " ").title(), "")
+            )
+            mx = ML + i * (MET_W + 0.20)
+            rect(mx, y + 0.06, MET_W, 0.64, P["surface2"], radius=0.12)
+            t(mx + 0.18, y - 0.05, ico,
+              size=14, color=P["accent"])
+            t(mx + 0.44, y - 0.06, label,
+              size=8.5, color=P["text"], weight="bold")
+            t(mx + 0.44, y - 0.25,
+              textwrap.fill(desc, width=22),
+              size=7, color=P["text2"])
+        y -= 0.84
 
-    # ── FOOTER ────────────────────────────────────────────────────────────────
-    hline(0.28)
-    txt(fig_w / 2, 0.15,
-        "Generated by SkillCert  •  Powered by SkillPoV",
-        fontsize=7.5, color=C_GRAY, ha="center", fontstyle="italic")
+    hrule(y)
+    y -= 0.30
 
-    plt.tight_layout(pad=0)
-    plt.savefig(out_path, dpi=180, bbox_inches="tight", facecolor=C_BG)
+    # ══════════════════════════════════════════════════════════════════════════
+    # DATA PRACTICES ROW  (third-party sharing | retention)
+    # ══════════════════════════════════════════════════════════════════════════
+    y = section_label(y, "Data Practices")
+
+    shared   = analysis.get("data_shared_with_third_parties", False)
+    retained = analysis.get("data_retained", "unknown")
+
+    def practice_card(px, py, w, title, value, value_color):
+        rect(px, py + 0.06, w, 0.72, P["surface2"], radius=0.12)
+        t(px + 0.18, py - 0.06, title,
+          size=7.5, color=P["text3"], weight="bold")
+        t(px + 0.18, py - 0.28, str(value).upper(),
+          size=10, color=value_color, weight="bold")
+
+    CARD_W = (CW - 0.20) / 2
+
+    # third-party sharing
+    sh_val   = "YES" if shared else "NO"
+    sh_color = P["warn"] if shared else P["accent"]
+    practice_card(ML, y, CARD_W, "SHARED WITH THIRD PARTIES", sh_val, sh_color)
+
+    # data retention
+    ret_map = {
+        True:      ("YES",     P["warn"]),
+        False:     ("NO",      P["accent"]),
+        "unknown": ("UNKNOWN", P["text3"]),
+    }
+    rv, rc_ret = ret_map.get(retained, ("UNKNOWN", P["text3"]))
+    practice_card(ML + CARD_W + 0.20, y, CARD_W, "DATA RETAINED", rv, rc_ret)
+
+    y -= 0.92
+
+    hrule(y)
+    y -= 0.30
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # FOOTER
+    # ══════════════════════════════════════════════════════════════════════════
+    # bottom bar
+    ax.add_patch(plt.Rectangle(
+        (0, 0), W, 0.54,
+        facecolor=P["surface"], alpha=1.0, zorder=3,
+        transform=ax.transData,
+    ))
+    ax.plot([0, W], [0.54, 0.54],
+            color=P["border"], linewidth=0.6,
+            alpha=0.6, zorder=4)
+
+    t(ML, 0.36,
+      "SkillCert  •  Automated Privacy Analysis",
+      size=7.5, color=P["text3"])
+    t(MR, 0.36,
+      "Powered by SkillPoV  •  Static Code Analysis",
+      size=7.5, color=P["text3"], align="right")
+
+    t(W / 2, 0.18,
+      "This label reflects data collection practices detected in the skill's source code.",
+      size=6.8, color=P["text3"], align="center")
+
+    # ── save ──────────────────────────────────────────────────────────────────
+    fig.savefig(
+        out_path, dpi=DPI,
+        bbox_inches="tight",
+        facecolor=P["bg"],
+        pad_inches=0.05,
+    )
     plt.close(fig)
-    print(f"  [OK] Saved → {out_path}")
+    print(f"  [OK] → {out_path}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN
@@ -442,45 +514,37 @@ def draw_label(skill_name, author, analysis, permissions,
 def main():
     skills = discover_skills()
     if not skills:
-        sys.exit(f"[ERROR] No report files found in {FINAL_PATH}.\n"
-                 "Run scan_skills.py then main.py first.")
+        sys.exit(
+            f"[ERROR] No report files found in {FINAL_PATH}.\n"
+            "Run scan_skills.py then main.py first."
+        )
 
-    print(f"Found {len(skills)} skill(s). Generating labels...\n")
+    print(f"\nFound {len(skills)} skill(s). Generating labels...\n")
 
     for s in skills:
         author, skill_name = s["author"], s["skill"]
-        print(f"Processing: {author}/{skill_name}")
+        print(f"Processing: {author} / {skill_name}")
 
         report_text = open(s["report_path"]).read().strip()
         if not report_text:
             print("  [SKIP] Empty report.")
             continue
 
-        permissions = load_permissions(author, skill_name)
-        matched, unmatched, code_only = match_permissions_to_collection(
-            permissions, report_text
-        )
+        print("  Calling ChatGPT for structured analysis...")
+        analysis = ask_chatgpt(report_text)
 
-        print(f"  Permissions declared : {len(permissions)}")
-        print(f"  Matched in code      : {len(matched)}")
-        print(f"  Not found in code    : {len(unmatched)}")
-        print(f"  In code, undeclared  : {len(code_only)}")
-
-        print("  Calling ChatGPT for structured summary...")
-        analysis = ask_chatgpt(report_text, permissions)
+        print(f"  Risk level : {analysis.get('risk_level', '?')}")
+        print(f"  Data types : {len(analysis.get('data_types', []))}")
 
         draw_label(
-            skill_name  = skill_name,
-            author      = author,
-            analysis    = analysis,
-            permissions = permissions,
-            matched     = matched,
-            unmatched   = unmatched,
-            code_only   = code_only,
-            out_path    = s["label_path"],
+            skill_name = skill_name,
+            author     = author,
+            analysis   = analysis,
+            out_path   = s["label_path"],
         )
 
-    print(f"\nDone. Labels saved to: {LABELS_PATH}")
+    print(f"\nDone. Labels saved to:\n  {LABELS_PATH}\n")
+
 
 if __name__ == "__main__":
     main()
