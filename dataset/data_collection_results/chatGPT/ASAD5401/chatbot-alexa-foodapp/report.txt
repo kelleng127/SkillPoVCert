@@ -1,1 +1,1 @@
-This skill will seek your name, address, and email permissions.
+This skill will seek your address, name, and email permissions.

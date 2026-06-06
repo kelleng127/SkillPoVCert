@@ -1,2 +1,0 @@
-outputs data collection	/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js	hello aman, you are welcome. what is your birthday?	collect data birthday	
-outputs data collection	/scratch/kgrosse/SkillPoV/dataset/repos/aman199002/alexa_birthday_reminder/lambda/index.js	i was born 14th feb, 2012. when were you born?	collect data age	
