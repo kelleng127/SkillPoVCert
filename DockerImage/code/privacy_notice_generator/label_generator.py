@@ -139,7 +139,7 @@ THRESHOLDS = [
     (8,  999, "high"),
 ]
 
-
+ 
 def get_sensitivity(data_type_name: str) -> str:
     """Return the sensitivity tier for a given data type name string."""
     name_lower = data_type_name.lower()
