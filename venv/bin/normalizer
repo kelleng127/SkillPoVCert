@@ -1,4 +1,4 @@
-#!/Users/jalil/Documents/GitHub/SkillPoVCert/venv/bin/python3.13
+#!/Users/kellen/Privacy_Compliance_CI/SkillPoVCert/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
