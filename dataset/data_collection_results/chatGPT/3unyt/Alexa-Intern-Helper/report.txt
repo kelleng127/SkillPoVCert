@@ -1,1 +1,0 @@
-This skill will collect your name during the conversation. Also, this skill will seek your name and email permissions.
