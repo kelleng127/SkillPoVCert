@@ -1,0 +1,141 @@
+#!/bin/bash
+# clone_skills.sh
+# ───────────────────────────────────────────────────────────────────────────────
+# Clones 95 Alexa skill repositories into dataset/repos/<author>/<repo>/
+# Run from the root of your SkillPoVCert directory with your venv active.
+#
+# Usage:
+#   chmod +x clone_skills.sh
+#   ./clone_skills.sh
+# ───────────────────────────────────────────────────────────────────────────────
+
+set -e
+REPOS_DIR="dataset/repos"
+mkdir -p "$REPOS_DIR"
+
+clone() {
+    local author="$1"
+    local repo="$2"
+    local url="$3"
+    local dest="$REPOS_DIR/$author/$repo"
+    if [ -d "$dest/.git" ]; then
+        echo "  [SKIP] $author/$repo already exists"
+    else
+        mkdir -p "$REPOS_DIR/$author"
+        echo "  [CLONE] $author/$repo"
+        git clone --depth=1 --quiet "$url" "$dest" 2>/dev/null \
+            || echo "  [FAIL] $url — skipping"
+    fi
+}
+
+echo ""
+echo "═══════════════════════════════════════════════════════"
+echo "  SkillCert — Cloning 95 skills into $REPOS_DIR"
+echo "═══════════════════════════════════════════════════════"
+echo ""
+
+# ── LIKELY HIGH RISK (violation=1, sensitive data by name/purpose) ────────────
+echo "▶ High-risk candidates..."
+clone "alexapoc"      "small-business-lead-form-skill"             "https://github.com/alexapoc/small-business-lead-form-skill"
+clone "alexa-samples" "skill-sample-nodejs-linked-profile"         "https://github.com/alexa-samples/skill-sample-nodejs-linked-profile"
+clone "alexa-samples" "dynamic-location-demo"                      "https://github.com/alexa-samples/dynamic-location-demo"
+clone "alexa-samples" "skill-sample-nodejs-demo-store-amazon-pay"  "https://github.com/alexa-samples/skill-sample-nodejs-demo-store-amazon-pay"
+clone "AlexaLambda"   "emotiondetection"                           "https://github.com/AlexaLambda/emotiondetection"
+clone "ahmedadham88"  "alexa-skill-package"                        "https://github.com/ahmedadham88/alexa-skill-package"
+clone "akpersad"      "Vitagraph-Alexa-Skill"                      "https://github.com/akpersad/Vitagraph-Alexa-Skill"
+clone "aflorithmic"   "alexa"                                      "https://github.com/aflorithmic/alexa"
+clone "1337-server"   "Tracked-media"                              "https://github.com/1337-server/Tracked-media"
+clone "aarjo"         "alexa-league-rank-finder"                   "https://github.com/aarjo/alexa-league-rank-finder"
+
+# ── LIKELY MEDIUM RISK (violation=1, moderate PII — name, food, shopping) ─────
+echo "▶ Medium-risk candidates..."
+clone "aaronkh"       "bobafetch-alexa"                            "https://github.com/aaronkh/bobafetch-alexa"
+clone "alexa-samples" "skill-sample-nodejs-the-foodie"             "https://github.com/alexa-samples/skill-sample-nodejs-the-foodie"
+clone "alexa-samples" "skill-sample-nodejs-gift-idea"              "https://github.com/alexa-samples/skill-sample-nodejs-gift-idea"
+clone "alexa-samples" "skill-sample-nodejs-trivia-pal"             "https://github.com/alexa-samples/skill-sample-nodejs-trivia-pal"
+clone "alexa-samples" "skill-sample-nodejs-shopping-actions"       "https://github.com/alexa-samples/skill-sample-nodejs-shopping-actions"
+clone "alexa-labs"    "skill-sample-nodejs-pager-karaoke"          "https://github.com/alexa-labs/skill-sample-nodejs-pager-karaoke"
+clone "alexadev1"     "Hackster.IO"                                "https://github.com/alexadev1/Hackster.IO"
+clone "actionably"    "skill-sample-nodejs-hello-world-v1"         "https://github.com/actionably/skill-sample-nodejs-hello-world-v1"
+clone "alexa-samples" "skill-sample-nodejs-multi"                  "https://github.com/alexa-samples/skill-sample-nodejs-multi"
+clone "alexturnbull7" "alex-skill-is-today-a-mournes-day"          "https://github.com/alexturnbull7/alex-skill-is-today-a-mournes-day"
+clone "algono"        "FeedTheParrot-RSS"                          "https://github.com/algono/FeedTheParrot-RSS"
+clone "alu0101325583" "Alexa-Skill-question-game"                  "https://github.com/alu0101325583/Alexa-Skill-question-game"
+clone "amantech90"    "alexa-remote-api"                           "https://github.com/amantech90/alexa-remote-api"
+clone "AmineAfia"     "hackdays-dmm"                               "https://github.com/AmineAfia/hackdays-dmm"
+clone "amzjctuan"     "Math-tutor"                                 "https://github.com/amzjctuan/Math-tutor"
+clone "Anand-lab"     "Restaurant-Finder"                          "https://github.com/Anand-lab/Restaurant-Finder"
+clone "andijakl"      "VoiceLearning"                              "https://github.com/andijakl/VoiceLearning"
+clone "andrelandgraf" "foodo-alexa-skill"                          "https://github.com/andrelandgraf/foodo-alexa-skill"
+clone "andreroberts1119" "alexa_skill"                             "https://github.com/andreroberts1119/alexa_skill"
+clone "andrewhlu"     "step-to-jeff"                               "https://github.com/andrewhlu/step-to-jeff"
+clone "AndrooTheChen" "day-zero"                                   "https://github.com/AndrooTheChen/day-zero"
+clone "anelliat"      "internConnect"                              "https://github.com/anelliat/internConnect"
+clone "angeloreale"   "public-radio-alexa-skill"                   "https://github.com/angeloreale/public-radio-alexa-skill"
+clone "anhuiyang"     "alexa_js_quiz"                              "https://github.com/anhuiyang/alexa_js_quiz"
+clone "anisha-chatterjee" "brain-bee-challenge"                    "https://github.com/anisha-chatterjee/brain-bee-challenge"
+clone "antointbt"     "my-cougar-assistant"                        "https://github.com/antointbt/my-cougar-assistant"
+clone "anusreebasu"   "Alexa-Skill-Replica-Test"                   "https://github.com/anusreebasu/Alexa-Skill-Replica-Test"
+clone "apsdehal"      "alexa-skill-math-hero"                      "https://github.com/apsdehal/alexa-skill-math-hero"
+clone "Arniox"        "city-to-city-app"                           "https://github.com/Arniox/city-to-city-app"
+clone "arnoutc"       "mydailymenu_alexaconversations"             "https://github.com/arnoutc/mydailymenu_alexaconversations"
+clone "arunmummidi"   "hello-alexa"                                "https://github.com/arunmummidi/hello-alexa"
+clone "ArunSarva"     "Alexa-skill"                                "https://github.com/ArunSarva/Alexa-skill"
+clone "aryabrains-official" "StoriesForMe"                         "https://github.com/aryabrains-official/StoriesForMe"
+clone "asananddevsingh" "alexa-v2-playlist"                        "https://github.com/asananddevsingh/alexa-v2-playlist"
+clone "A-Sattari"     "Exam-Schedule-Skill"                        "https://github.com/A-Sattari/Exam-Schedule-Skill"
+clone "ashleymavericks" "dietary-care"                             "https://github.com/ashleymavericks/dietary-care"
+clone "ashusath"      "number"                                     "https://github.com/ashusath/number"
+clone "ask-utils"     "example"                                    "https://github.com/ask-utils/example"
+clone "ATgump"        "alexaRecordSkill"                           "https://github.com/ATgump/alexaRecordSkill"
+clone "austinvach"    "apl-audio-to-speech"                        "https://github.com/austinvach/apl-audio-to-speech"
+clone "AwsAlexa"      "alexa"                                      "https://github.com/AwsAlexa/alexa"
+clone "aws-samples"   "ask-form-template"                          "https://github.com/aws-samples/ask-form-template"
+clone "baclap"        "q-and-a-template"                           "https://github.com/baclap/q-and-a-template"
+clone "bdeshong"      "alexa-workshop"                             "https://github.com/bdeshong/alexa-workshop"
+clone "benhalverson"  "AlexaSkillMercedesBenz"                     "https://github.com/benhalverson/AlexaSkillMercedesBenz"
+
+# ── LIKELY LOW / NO RISK (violation=0, trivia/utility/educational) ────────────
+echo "▶ Low-risk candidates..."
+clone "07jeancms"     "skill-trivia"                               "https://github.com/07jeancms/skill-trivia"
+clone "aarlin"        "alphabet-position"                          "https://github.com/aarlin/alphabet-position"
+clone "aarlin"        "vowel-counter"                              "https://github.com/aarlin/vowel-counter"
+clone "abastienIIT"   "SimonAlexa"                                 "https://github.com/abastienIIT/SimonAlexa"
+clone "acedonadriatico" "The-Snowy-Day-Trivia-Game"                "https://github.com/acedonadriatico/The-Snowy-Day-Trivia-Game"
+clone "acucciniello"  "business-bear"                              "https://github.com/acucciniello/business-bear"
+clone "adamgruber"    "alexa-skill-boilerplate"                    "https://github.com/adamgruber/alexa-skill-boilerplate"
+clone "adithyabhonsley" "Fizz-Buzz"                                "https://github.com/adithyabhonsley/Fizz-Buzz"
+clone "AcrossTheCloud" "TBA21-Alexa"                               "https://github.com/AcrossTheCloud/TBA21-Alexa"
+clone "actsasrob"     "lircdo_ask"                                 "https://github.com/actsasrob/lircdo_ask"
+clone "ACloudGuru-Resources" "content-aws-skill-builder"           "https://github.com/ACloudGuru-Resources/content-aws-skill-builder"
+clone "1onder"        "Quantum"                                    "https://github.com/1onder/Quantum"
+clone "aegixx"        "alexa-rewards"                              "https://github.com/aegixx/alexa-rewards"
+clone "aespringfield"  "seconds"                                   "https://github.com/aespringfield/seconds"
+clone "Africa4Days"   "Echo4Education"                             "https://github.com/Africa4Days/Echo4Education"
+clone "agrygo99"      "MyTarotCard"                                "https://github.com/agrygo99/MyTarotCard"
+clone "ahbell96"      "Project-Skill"                              "https://github.com/ahbell96/Project-Skill"
+clone "aanyas72"      "reminder-app-alexa"                         "https://github.com/aanyas72/reminder-app-alexa"
+clone "aashay4123"    "Food-Nutrition-Alexa-Skill"                 "https://github.com/aashay4123/Food-Nutrition-Alexa-Skill"
+clone "adanaher"      "wellness-tracker-jovo"                      "https://github.com/adanaher/wellness-tracker-jovo"
+clone "agrc"          "digital-assisant-skills"                    "https://github.com/agrc/digital-assisant-skills"
+clone "agshubham007"  "skill_multimodal"                           "https://github.com/agshubham007/skill_multimodal"
+clone "AdonousTech"   "udemy-ask-v2-barebones-starter"             "https://github.com/AdonousTech/udemy-ask-v2-barebones-starter"
+clone "AdrianGlez18"  "Curiosidades-historicas-en-Alexa"           "https://github.com/AdrianGlez18/Curiosidades-historicas-en-Alexa"
+clone "adrwh"         "alexa-skill-web-services-demo"              "https://github.com/adrwh/alexa-skill-web-services-demo"
+clone "advargas"      "alexa-my-calendar"                          "https://github.com/advargas/alexa-my-calendar"
+clone "13thontheleft" "test-audioplayer"                           "https://github.com/13thontheleft/test-audioplayer"
+clone "3-dots"        "youbet"                                     "https://github.com/3-dots/youbet"
+clone "5k"            "alexa-template-http-request-promise"        "https://github.com/5k/alexa-template-http-request-promise"
+clone "aioverlords"   "Alexa-Translation-Skill-Google-NLU"         "https://github.com/aioverlords/Alexa-Translation-Skill-Google-NLU"
+clone "09panesara"    "voice-search-jovo"                          "https://github.com/09panesara/voice-search-jovo"
+clone "Ajay19domi"    "animal-voice-distribution"                  "https://github.com/Ajay19domi/animal-voice-distribution"
+clone "AjinkyaBapat"  "MovieDeciderSkill"                          "https://github.com/AjinkyaBapat/MovieDeciderSkill"
+clone "ak1132"        "RedditDealsSkill"                           "https://github.com/ak1132/RedditDealsSkill"
+clone "akersh-s"      "sample-skill-nodejs-sauce-boss"             "https://github.com/akersh-s/sample-skill-nodejs-sauce-boss"
+clone "AldosAC"       "fat-cat"                                    "https://github.com/AldosAC/fat-cat"
+clone "alexa-dev-hub" "alexa-skill-guess-my-character"             "https://github.com/alexa-dev-hub/alexa-skill-guess-my-character"
+clone "alexander-ma"  "ovation-project"                            "https://github.com/alexander-ma/ovation-project"
+
+echo ""
+echo "═══════════════════════════════════════════════════════"
+echo "  Done cloning. Now run the pipeline:"

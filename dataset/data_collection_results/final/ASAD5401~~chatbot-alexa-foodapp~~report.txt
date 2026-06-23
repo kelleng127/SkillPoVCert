@@ -1,1 +1,1 @@
-permission data collection: email, permission data collection: name, permission data collection: address, 
+data collection during conversation: name, permission data collection: name, permission data collection: email, permission data collection: address, 

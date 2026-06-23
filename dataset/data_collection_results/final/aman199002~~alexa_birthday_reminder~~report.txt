@@ -1,1 +1,1 @@
-data collection during conversation: birthday, data collection during conversation: age, 
+data collection during conversation: age, data collection during conversation: birthday, 

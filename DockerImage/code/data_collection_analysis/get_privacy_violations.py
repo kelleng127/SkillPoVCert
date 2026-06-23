@@ -52,12 +52,18 @@ def write_results(filename, outputs):
 def get_data_collection_in_permission(skill_name, skill):
     permission_mapping = {}
     permission_mapping['alexa::devices:all:address:full:read'] = 'address'
-    permission_mapping['alexa:devices:all:address:country_and_postal_code:read'] = 'postal code'
+    permission_mapping['alexa::devices:all:address:country_and_postal_code:read'] = 'postal code'
     permission_mapping['alexa::profile:name:read'] = 'name'
     permission_mapping['alexa::profile:given_name:read'] = 'name'
     permission_mapping['alexa::profile:email:read'] = 'email'
     permission_mapping['alexa::profile:mobile_number:read'] = 'number'
     permission_mapping['alexa::devices:all:geolocation:read'] = 'location'
+    permission_mapping['alexa::household:lists:read'] = 'list'
+    permission_mapping['alexa::household:lists:write'] = 'list'
+    permission_mapping['alexa::reminders:reminders:read'] = 'reminder'
+    permission_mapping['alexa::reminders:reminders:write'] = 'reminder'
+    permission_mapping['payments:autopay_consent'] = 'financial'
+    permission_mapping['alexa::identity:account:read'] = 'account'
     permission_asked = get_permission(skill)
     data_collected_in_permission = []
     for permission in permission_asked:

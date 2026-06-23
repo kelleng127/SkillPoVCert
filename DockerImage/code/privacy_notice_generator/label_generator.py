@@ -48,7 +48,16 @@ _root        = os.path.dirname(os.path.dirname(os.path.dirname(_here)))
 _dataset     = os.path.join(_root, "dataset")
 FINAL_PATH   = os.path.join(_dataset, "data_collection_results", "final")
 LABELS_PATH  = os.path.join(_dataset, "labels")
-os.makedirs(LABELS_PATH, exist_ok=True)
+
+# Subdirectories split by risk classification
+LABEL_DIRS = {
+    "none":   os.path.join(LABELS_PATH, "none"),
+    "low":    os.path.join(LABELS_PATH, "low"),
+    "medium": os.path.join(LABELS_PATH, "medium"),
+    "high":   os.path.join(LABELS_PATH, "high"),
+}
+for _d in LABEL_DIRS.values():
+    os.makedirs(_d, exist_ok=True)
 
 # ── third-party imports ───────────────────────────────────────────────────────
 try:
@@ -255,9 +264,6 @@ def discover_skills():
             "author":      author,
             "skill":       skill,
             "report_path": os.path.join(FINAL_PATH, fname),
-            "label_path":  os.path.join(
-                LABELS_PATH, f"{author}~~{skill}_label.png"
-            ),
         })
     return skills
 
@@ -385,7 +391,7 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
     t(badge_x, y - 0.14, "SKILLCERT",
       size=6.5, color=P["accent"], weight="bold", align="right")
     t(badge_x, y - 0.30, "CERTIFIED PRIVACY LABEL",
-      size=6, color=P["text3"], align="right")
+      size=6, color=P["text2"], align="right")
 
     display = skill_name.replace("-", " ").replace("_", " ")
     display = " ".join(w.capitalize() for w in display.split())
@@ -405,7 +411,7 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
     }
     rc, rc_dim, rl = risk_cfg.get(risk_level, (P["text3"], P["surface2"], "UNKNOWN"))
     pill_x = MR - 1.52
-    pill_y = y - 0.92
+    pill_y = y - 0.76
     rect(pill_x, pill_y + 0.30, 1.35, 0.34, rc_dim, radius=0.14)
     ax.plot([pill_x, pill_x + 1.35], [pill_y + 0.30, pill_y + 0.30],
             color=rc, linewidth=1.2, alpha=0.7,
@@ -414,9 +420,9 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
       size=8.5, color=rc, weight="bold", align="center")
 
     # risk score sub-label
-    t(pill_x + 0.675, pill_y - 0.02,
+    t(pill_x + 0.675, pill_y - 0.08,
       f"score: {risk_score}",
-      size=6.5, color=P["text3"], align="center")
+      size=6.5, color=P["text2"], align="center")
 
     y -= 1.72
     hrule(y)
@@ -663,16 +669,23 @@ def main():
         print(f"  Data types : {len(data_types)}")
         print(f"  Risk score : {risk_score}  →  {risk_level.upper()}")
 
+        # Route label into the correct subdirectory based on risk level
+        label_dir  = LABEL_DIRS.get(risk_level, LABEL_DIRS["low"])
+        label_path = os.path.join(label_dir, f"{author}~~{skill_name}_label.png")
+
         draw_label(
             skill_name  = skill_name,
             author      = author,
             analysis    = analysis,
             risk_level  = risk_level,
             risk_score  = risk_score,
-            out_path    = s["label_path"],
+            out_path    = label_path,
         )
 
-    print(f"\nDone. Labels saved to:\n  {LABELS_PATH}\n")
+    print(f"\nDone. Labels saved to:")
+    for level, d in LABEL_DIRS.items():
+        count = len([f for f in os.listdir(d) if f.endswith(".png")])
+        print(f"  {level:8s} → {d}  ({count} label{'s' if count != 1 else ''})")
 
 
 if __name__ == "__main__":

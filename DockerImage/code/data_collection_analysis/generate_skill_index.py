@@ -22,7 +22,7 @@ def get_root(path, skill_input_folder):
     filenames = get_all_files(path)
     has_code = 0 
     for filename in filenames:
-        if filename.endswith('.js') or filename.endswith('.py') or filename.endswith('.java'):
+        if filename.endswith('.js') or filename.endswith('.py') or filename.endswith('.java') or filename.endswith('.ts'):
             has_code = 1
             break
     if has_code == 0:
@@ -48,7 +48,7 @@ def get_index(skill_input_folder):
         root = get_root(file, skill_input_folder)
         filenames = get_all_files(root)
         for filename in filenames:
-            if filename.endswith('.js') or filename.endswith('.py'):
+            if filename.endswith('.js') or filename.endswith('.py') or filename.endswith('.ts'):
                 code_files.append(filename)
             if filename.endswith('skill.json'):
                 manifest_file = filename

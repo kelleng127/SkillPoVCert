@@ -4,6 +4,7 @@ from tqdm import tqdm
 import generate_skill_index
 import get_skill_outputs
 import get_content_safety
+import get_slot_data
 import get_privacy_violations
 import generate_report
 import os
@@ -27,6 +28,7 @@ def check_skill(root_path, folder):
         print(skill_name)
         get_skill_outputs.get_all_outputs(skill_name)
         get_content_safety.get_content_safety(skill_name)
+        get_slot_data.get_slot_data(skill_name)
         get_privacy_violations.get_privacy_violations(skill_name)
         generate_report.get_report(skill_name)
 
