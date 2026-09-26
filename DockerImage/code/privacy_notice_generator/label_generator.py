@@ -1,42 +1,42 @@
 """
 label_generator.py
 ------------------
-Generates a certified privacy label PNG for each Alexa skill analyzed
-by the SkillPoV pipeline. Labels are based purely on backend code analysis —
-no manifest comparison, no privacy policy matching. The code is the truth.
+Generates a certified privacy label PNG for each Alexa skill analyzed by the
+SkillPoV pipeline. Labels are based purely on backend static analysis.
 
 Pipeline:
   1. Read data_collection_results/final/<author>~~<skill>~~report.txt
-  2. Send to ChatGPT for structured JSON extraction of data types/methods/summary
-  3. Classify risk level deterministically in Python (not by ChatGPT)
-  4. Draw a refined, visually polished privacy label and save as PNG
+  2. Parse data types and collection channels directly from the report
+     (deterministic; no LLM involved)
+  3. Assign each data type a sensitivity tier from the keyword lexicon and
+     compute the risk score and level (deterministic; no LLM involved)
+  4. Ask the LLM for a 2-3 sentence plain-English summary of the parsed
+     findings (display text only; falls back to a template sentence)
+  5. Draw the label PNG and write labels/labels_summary.csv
 
 Risk Classification Logic (hardcoded, deterministic):
-  - Each data type is assigned a sensitivity tier (high / medium / low)
-  - A weighted score is computed across all detected data types
-  - Score thresholds determine the final risk level:
-      none   = score 0
-      low    = score 1–3
-      medium = score 4–7
-      high   = score 8+
-
   Sensitivity weights:
       high   = 4 pts  (SSN, financial, biometric, health, precise location)
       medium = 2 pts  (name, email, phone, age, gender, postal code, address)
-      low    = 1 pt   (preferences, reminders, general inputs)
+      low    = 1 pt   (preferences, reminders, lists, general inputs)
+  Collection channel modifier:
+      +1 if data is collected both in conversation AND via Alexa permissions
+  Score -> level:  0 none | 1-3 low | 4-7 medium | 8+ high
 
-  Collection method modifier:
-      +1 if both conversation AND permission_api are used simultaneously
+Third-party sharing and retention are NOT detected by static analysis, so the
+label reports them as "Not analyzed" rather than guessing.
 
-Usage (from SkillPoV root):
-    python3 DockerImage/code/label_generator.py
+Usage (from SkillPoVCert root):
+    python3 DockerImage/code/privacy_notice_generator/label_generator.py
 
 Output:
-    dataset/labels/<author>~~<skill>_label.png
+    dataset/labels/<level>/<author>~~<skill>_label.png
+    dataset/labels/labels_summary.csv
 """
 
 import os
 import sys
+import csv
 import json
 import re
 import textwrap
@@ -73,22 +73,11 @@ except ImportError as e:
         "Run:  pip install openai matplotlib numpy"
     )
 
-# ── OpenAI key ────────────────────────────────────────────────────────────────
-_summary_py = os.path.join(
-    _here, "privacy_notice_generator", "chatGPT_summary.py"
-)
+# ── OpenAI key (optional: only used for the display summary) ─────────────────
 openai.api_key = os.environ.get("OPENAI_API_KEY", "")
-if not openai.api_key and os.path.exists(_summary_py):
-    for line in open(_summary_py):
-        if "api_key" in line and "=" in line:
-            m = re.search(r'["\']([sk]-[^"\']{20,})["\']', line)
-            if m:
-                openai.api_key = m.group(1)
 if not openai.api_key:
-    sys.exit(
-        "[ERROR] OpenAI API key not found.\n"
-        "Set OPENAI_API_KEY env var or add it to chatGPT_summary.py."
-    )
+    print("[WARN] OPENAI_API_KEY not set. Labels will use template summaries; "
+          "risk scores are unaffected.")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # RISK CLASSIFICATION — fully deterministic, no ChatGPT involvement
@@ -104,7 +93,8 @@ SENSITIVITY_TIERS = {
         "ssn", "social security", "passport", "driver license",
         "bank account", "credit card", "debit card", "financial",
         "income", "salary", "biometric", "fingerprint", "face",
-        "health", "medical", "diagnosis", "prescription",
+        "health", "medical", "medication", "diagnosis", "prescription",
+        "weight", "height", "blood pressure",
         "precise location", "gps", "geolocation",
         "ethnicity", "race", "religion", "political",
     ],
@@ -159,38 +149,31 @@ def get_sensitivity(data_type_name: str) -> str:
     return "low"
 
 
-def classify_risk(data_types: list, collection_methods: list) -> str:
+def score_risk(data_types: list, collection_methods: list):
     """
-    Compute a weighted risk score and return a risk level string.
+    Deterministic risk score. Tiers come only from the keyword lexicon
+    (get_sensitivity); nothing here depends on LLM output.
 
-    Args:
-        data_types:         list of dicts with at least a "name" key
-        collection_methods: list of method strings
-
-    Returns:
-        "none" | "low" | "medium" | "high"
+    Returns (score, level) with level in "none" | "low" | "medium" | "high".
     """
     if not data_types:
-        return "none"
+        return 0, "none"
 
-    score = 0
-    for dt in data_types:
-        tier   = dt.get("sensitivity") or get_sensitivity(dt.get("name", ""))
-        # Normalise tier in case ChatGPT returned something unexpected
-        if tier not in TIER_WEIGHTS:
-            tier = get_sensitivity(dt.get("name", ""))
-        score += TIER_WEIGHTS.get(tier, 1)
+    score = sum(TIER_WEIGHTS[get_sensitivity(dt["name"])] for dt in data_types)
 
-    # Method modifier: using both conversation AND permission API simultaneously
-    # suggests the skill is actively requesting data through multiple vectors
+    # Channel modifier: data requested both in conversation and via permissions
     if "conversation" in collection_methods and "permission_api" in collection_methods:
         score += 1
 
     for lo, hi, level in THRESHOLDS:
         if lo <= score <= hi:
-            return level
+            return score, level
+    return score, "high"
 
-    return "high"
+
+def classify_risk(data_types: list, collection_methods: list) -> str:
+    """Backward-compatible wrapper returning only the risk level."""
+    return score_risk(data_types, collection_methods)[1]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -268,62 +251,116 @@ def discover_skills():
     return skills
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 2 – ChatGPT structured extraction (data types + summary ONLY)
-# risk_level is NOT requested from ChatGPT — we compute it ourselves
+# STEP 2 – parse the normalized report (deterministic)
 # ─────────────────────────────────────────────────────────────────────────────
-SYSTEM_PROMPT = """
-You are a privacy analyst. Given a SkillPoV static-code-analysis report for
-an Amazon Alexa skill, extract structured privacy information.
-
-Return ONLY a valid JSON object — no markdown fences, no extra text:
-
-{
-  "data_types": [
-    {
-      "name": "short data type label, e.g. Full Name",
-      "sensitivity": "low" | "medium" | "high",
-      "how": "one short phrase describing how it is collected, e.g. asked via conversation"
-    }
-  ],
-  "collection_methods": ["conversation" | "permission_api" | "inferred"],
-  "data_shared_with_third_parties": true | false,
-  "data_retained": true | false | "unknown",
-  "summary": "2-3 sentence plain-English summary of what data this skill collects and why it matters to the user"
+CHANNEL_PREFIXES = {
+    "data collection during conversation:": "conversation",
+    "permission data collection:":          "permission_api",
 }
 
-Sensitivity definitions:
-- high   = financial, biometric, SSN, health, precise GPS location
-- medium = name, email, phone, age, gender, postal code, address, city/state
-- low    = general preferences, reminders, lists, non-personal inputs
+# Normalize detector labels to one display name per data type
+NAME_ALIASES = {
+    "number":        "phone number",   # alexa::profile:mobile_number:read
+    "email address": "email",
+    "zipcode":       "postal code",
+    "zip code":      "postal code",
+    "zip":           "postal code",
+}
 
-Be concise. Only include data types explicitly evidenced in the report.
-If nothing sensitive is collected, data_types should be an empty array.
-Do NOT include a risk_level field — that is computed separately.
+HOW_TEXT = {
+    ("conversation",):                  "asked during conversation",
+    ("permission_api",):                "via Alexa permission",
+    ("conversation", "permission_api"): "asked in conversation and via Alexa permission",
+}
+
+
+def parse_report(report_text):
+    """
+    Turn a final/ report ("data collection during conversation: name,
+    permission data collection: email, ...") into a list of unique data types
+    with their collection channels. One entry per data type; a type found in
+    both channels appears once, with both channels recorded.
+    """
+    found = {}          # name -> set(channels), insertion-ordered
+    for part in report_text.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        for prefix, channel in CHANNEL_PREFIXES.items():
+            if part.lower().startswith(prefix):
+                name = part[len(prefix):].strip().lower()
+                name = NAME_ALIASES.get(name, name)
+                if name:
+                    found.setdefault(name, set()).add(channel)
+                break
+
+    data_types = []
+    for name, channels in found.items():
+        key = tuple(c for c in ("conversation", "permission_api") if c in channels)
+        data_types.append({
+            "name":        name,
+            "sensitivity": get_sensitivity(name),
+            "how":         HOW_TEXT[key],
+            "channels":    list(key),
+        })
+
+    methods = [c for c in ("conversation", "permission_api")
+               if any(c in dt["channels"] for dt in data_types)]
+    return data_types, methods
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 2b – plain-English summary (LLM, display text only)
+# The LLM receives the already-parsed findings and may not add data types.
+# ─────────────────────────────────────────────────────────────────────────────
+SUMMARY_PROMPT = """
+You write the summary line for a privacy label for an Amazon Alexa skill.
+You are given the exact list of personal data types that static code analysis
+found, and how each is collected. Write 2-3 plain-English sentences telling a
+user what this skill collects and how.
+
+Rules:
+- Mention only the data types given. Do not add, rename or generalize them
+  (e.g. do not turn "location" into "precise GPS location").
+- Do not claim anything about sharing, selling, storage or retention.
+- Return only the sentences, no quotes or markdown.
 """
 
-def ask_chatgpt(report_text):
+
+def template_summary(data_types):
+    if not data_types:
+        return "Static analysis found no personal data collection in this skill's code."
+    conv = [dt["name"] for dt in data_types if "conversation" in dt["channels"]]
+    perm = [dt["name"] for dt in data_types if "permission_api" in dt["channels"]]
+    def join(xs):
+        return xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1]
+    parts = []
+    if conv:
+        parts.append(f"This skill asks for your {join(conv)} during the conversation.")
+    if perm:
+        parts.append(f"It requests Alexa permission to access your {join(perm)}.")
+    return " ".join(parts)
+
+
+def summarize(data_types):
+    """LLM summary of the parsed findings, or a template if unavailable."""
+    if not data_types or not openai.api_key:
+        return template_summary(data_types)
+    findings = "\n".join(f"- {dt['name']}: {dt['how']}" for dt in data_types)
     try:
         resp = openai.ChatCompletion.create(
             model    = "gpt-3.5-turbo",
             messages = [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",   "content": f"REPORT:\n{report_text}"},
+                {"role": "system", "content": SUMMARY_PROMPT},
+                {"role": "user",   "content": f"FINDINGS:\n{findings}"},
             ],
             timeout  = 40,
         )
-        raw = resp["choices"][0]["message"]["content"].strip()
-        raw = re.sub(r"^```[a-z]*\n?", "", raw)
-        raw = re.sub(r"\n?```$",        "", raw)
-        return json.loads(raw)
+        text = resp["choices"][0]["message"]["content"].strip().strip('"')
+        return text or template_summary(data_types)
     except Exception as e:
-        print(f"  [WARN] ChatGPT error: {e}. Using safe defaults.")
-        return {
-            "data_types":                     [],
-            "collection_methods":             [],
-            "data_shared_with_third_parties": False,
-            "data_retained":                  "unknown",
-            "summary":                        "Analysis could not be completed.",
-        }
+        print(f"  [WARN] Summary LLM call failed ({e}); using template summary.")
+        return template_summary(data_types)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 3 – draw the label
@@ -543,7 +580,7 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
         "conversation":   ("◉", "Via Conversation",
                            "Skill asks the user directly during interaction"),
         "permission_api": ("◈", "Alexa Permission",
-                           "Accesses data via Alexa's permission API"),
+                           "Requests an Alexa permission declared in the skill manifest"),
         "inferred":       ("◍", "Inferred",
                            "Data inferred from user behaviour"),
     }
@@ -574,27 +611,19 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
     # ══════════════════════════════════════════════════════════════════════════
     y = section_label(y, "Data Practices")
 
-    shared   = analysis.get("data_shared_with_third_parties", False)
-    retained = analysis.get("data_retained", "unknown")
-
+    # Static analysis does not examine sharing or retention, so the label
+    # states that instead of printing an unverified YES/NO.
     def practice_card(px, py, w, title, value, value_color):
         rect(px, py + 0.06, w, 0.72, P["surface2"], radius=0.12)
         t(px + 0.18, py - 0.06, title, size=7.5, color=P["text3"], weight="bold")
         t(px + 0.18, py - 0.28, str(value).upper(),
           size=10, color=value_color, weight="bold")
 
-    CARD_W  = (CW - 0.20) / 2
-    sh_val  = "YES" if shared else "NO"
-    sh_col  = P["warn"] if shared else P["accent"]
-    practice_card(ML, y, CARD_W, "SHARED WITH THIRD PARTIES", sh_val, sh_col)
-
-    ret_map = {
-        True:      ("YES",     P["warn"]),
-        False:     ("NO",      P["accent"]),
-        "unknown": ("UNKNOWN", P["text3"]),
-    }
-    rv, rc_ret = ret_map.get(retained, ("UNKNOWN", P["text3"]))
-    practice_card(ML + CARD_W + 0.20, y, CARD_W, "DATA RETAINED", rv, rc_ret)
+    CARD_W = (CW - 0.20) / 2
+    practice_card(ML, y, CARD_W, "SHARED WITH THIRD PARTIES",
+                  "Not analyzed", P["text3"])
+    practice_card(ML + CARD_W + 0.20, y, CARD_W, "DATA RETAINED",
+                  "Not analyzed", P["text3"])
 
     y -= 0.92
     hrule(y)
@@ -633,9 +662,17 @@ def main():
             "Run scan_skills.py then main.py first."
         )
 
-    print(f"\nFound {len(skills)} skill(s). Generating labels...\n")
+    # Clear labels from earlier runs so a skill whose level changed does not
+    # leave a stale copy in its old folder.
+    for d in LABEL_DIRS.values():
+        for f in os.listdir(d):
+            if f.endswith("_label.png"):
+                os.remove(os.path.join(d, f))
 
-    for s in skills:
+    print(f"\nFound {len(skills)} skill(s). Generating labels...\n")
+    summary_rows = []
+
+    for s in sorted(skills, key=lambda k: (k["author"].lower(), k["skill"].lower())):
         author, skill_name = s["author"], s["skill"]
         print(f"Processing: {author} / {skill_name}")
 
@@ -644,35 +681,19 @@ def main():
             print("  [SKIP] Empty report.")
             continue
 
-        print("  Calling ChatGPT for structured extraction...")
-        analysis = ask_chatgpt(report_text)
+        data_types, methods = parse_report(report_text)
+        risk_score, risk_level = score_risk(data_types, methods)
+        analysis = {
+            "data_types":         data_types,
+            "collection_methods": methods,
+            "summary":            summarize(data_types),
+        }
 
-        # Ensure sensitivity values are set using our deterministic logic
-        for dt in analysis.get("data_types", []):
-            if not dt.get("sensitivity") or \
-               dt["sensitivity"] not in ("high", "medium", "low"):
-                dt["sensitivity"] = get_sensitivity(dt.get("name", ""))
+        print(f"  Data types : {', '.join(dt['name'] for dt in data_types) or 'none'}")
+        print(f"  Risk score : {risk_score}  ->  {risk_level.upper()}")
 
-        # Compute risk score and level deterministically
-        methods     = analysis.get("collection_methods", [])
-        data_types  = analysis.get("data_types", [])
-        risk_level  = classify_risk(data_types, methods)
-        risk_score  = sum(
-            TIER_WEIGHTS.get(
-                dt.get("sensitivity") or get_sensitivity(dt.get("name", "")), 1
-            )
-            for dt in data_types
-        )
-        if "conversation" in methods and "permission_api" in methods:
-            risk_score += 1
-
-        print(f"  Data types : {len(data_types)}")
-        print(f"  Risk score : {risk_score}  →  {risk_level.upper()}")
-
-        # Route label into the correct subdirectory based on risk level
-        label_dir  = LABEL_DIRS.get(risk_level, LABEL_DIRS["low"])
-        label_path = os.path.join(label_dir, f"{author}~~{skill_name}_label.png")
-
+        label_path = os.path.join(LABEL_DIRS[risk_level],
+                                  f"{author}~~{skill_name}_label.png")
         draw_label(
             skill_name  = skill_name,
             author      = author,
@@ -682,10 +703,30 @@ def main():
             out_path    = label_path,
         )
 
+        summary_rows.append({
+            "author":       author,
+            "skill":        skill_name,
+            "data_types":   "; ".join(f"{dt['name']} ({dt['sensitivity']}, {'+'.join(dt['channels'])})"
+                                      for dt in data_types),
+            "n_high":       sum(dt["sensitivity"] == "high" for dt in data_types),
+            "n_medium":     sum(dt["sensitivity"] == "medium" for dt in data_types),
+            "n_low":        sum(dt["sensitivity"] == "low" for dt in data_types),
+            "both_channels": int(len(methods) == 2),
+            "risk_score":   risk_score,
+            "risk_level":   risk_level,
+        })
+
+    csv_path = os.path.join(LABELS_PATH, "labels_summary.csv")
+    with open(csv_path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(summary_rows[0].keys()) if summary_rows else ["author"])
+        w.writeheader()
+        w.writerows(summary_rows)
+
     print(f"\nDone. Labels saved to:")
     for level, d in LABEL_DIRS.items():
         count = len([f for f in os.listdir(d) if f.endswith(".png")])
-        print(f"  {level:8s} → {d}  ({count} label{'s' if count != 1 else ''})")
+        print(f"  {level:8s} -> {d}  ({count} label{'s' if count != 1 else ''})")
+    print(f"  summary  -> {csv_path}")
 
 
 if __name__ == "__main__":
