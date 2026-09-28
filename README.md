@@ -1,6 +1,6 @@
 # SkillCert
-<img width="1401" alt="Screenshot 2024-05-02 at 4 22 36 PM" src="https://github.com/SkillPoV/SkillPoV/assets/168246960/a989057e-d518-4a30-8d82-33bc0115ded6">
 
+![SkillCert Pipeline](images/image.png)
 # Instructions
 
 * Place your own openai api key in Line 6 of /DockerImage/code/privacy_notice_generator/chatGPT_summary.py
