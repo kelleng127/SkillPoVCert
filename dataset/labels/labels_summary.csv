@@ -1,0 +1,143 @@
+author,skill,data_types,n_high,n_medium,n_low,both_channels,risk_score,risk_level
+0xDebabrata,alexa-covid19-tracker,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+0xDebabrata,alexa-covid19-trackeralexa-covid19-tracker,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+3unyt,Alexa-Intern-Helper,"name (medium, conversation+permission_api); email (medium, permission_api)",0,2,0,1,5,medium
+aarjo,alexa-league-rank-finder,"name (medium, conversation)",0,1,0,0,2,low
+aaronkh,bobafetch-alexa,"name (medium, permission_api); financial (high, permission_api)",1,1,0,0,6,medium
+AbhinavTuli,Apartments-Finder,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+AbhinavTuli,Foodie-Index,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+aflorithmic,alexa,"name (medium, conversation)",0,1,0,0,2,low
+ahsanali17,RocketElevators-AI-Alexa,"name (medium, conversation)",0,1,0,0,2,low
+ak1132,RedditDealsSkill,"name (medium, permission_api)",0,1,0,0,2,low
+alexa-samples,dynamic-location-demo,"location (medium, conversation+permission_api)",0,1,0,1,3,low
+alexa-samples,skill-sample-nodejs-demo-store-amazon-pay,"email (medium, conversation); address (medium, conversation); financial (high, permission_api)",1,2,0,1,9,high
+alexa-samples,skill-sample-nodejs-linked-profile,"address (medium, conversation)",0,1,0,0,2,low
+alexa-samples,skill-sample-nodejs-the-foodie,"name (medium, conversation); address (medium, conversation+permission_api); location (medium, conversation)",0,3,0,1,7,medium
+AlexaSRM,Skilltober-Hacktober-2020,"phone number (medium, permission_api); name (medium, permission_api); email (medium, permission_api)",0,3,0,0,6,medium
+aman199002,alexa_birthday_reminder,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+amantech90,alexa-remote-api,"name (medium, conversation)",0,1,0,0,2,low
+amzjctuan,Math-tutor,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+Anand-lab,Restaurant-Finder,"location (medium, conversation+permission_api)",0,1,0,1,3,low
+andijakl,VoiceLearning,"name (medium, conversation)",0,1,0,0,2,low
+AndrooTheChen,day-zero,"name (medium, conversation)",0,1,0,0,2,low
+anelliat,internConnect,"name (medium, conversation+permission_api); email (medium, permission_api)",0,2,0,1,5,medium
+antointbt,my-cougar-assistant,"name (medium, conversation)",0,1,0,0,2,low
+Arniox,city-to-city-app,"name (medium, conversation)",0,1,0,0,2,low
+ASAD5401,chatbot-alexa-foodapp,"name (medium, conversation+permission_api); email (medium, permission_api); address (medium, permission_api)",0,3,0,1,7,medium
+ashusath,rememberName,"name (medium, conversation)",0,1,0,0,2,low
+AwsAlexa,alexa,"name (medium, permission_api)",0,1,0,0,2,low
+bhalgalix,movie-diaries,"name (medium, conversation)",0,1,0,0,2,low
+bhuvneshkr,Alexa-Skill-DayZero,"name (medium, conversation)",0,1,0,0,2,low
+BladeSe7en,alexaEcoHome,"name (medium, conversation+permission_api)",0,1,0,1,3,low
+bzobrist,nodeproxy_alexa_skill,"name (medium, conversation)",0,1,0,0,2,low
+cavewoman,chattanooga-techie-skill,"name (medium, conversation)",0,1,0,0,2,low
+CeesJol,my-cafe,"birthday (medium, conversation); income (high, conversation)",1,1,0,0,6,medium
+CG-K,golf-clone,"location (medium, conversation); address (medium, permission_api)",0,2,0,1,5,medium
+charliewynn,okc-trash-day,"address (medium, conversation)",0,1,0,0,2,low
+cjain12,beauty_store,"birthday (medium, conversation); phone number (medium, conversation); name (medium, permission_api); financial (high, permission_api)",1,3,0,1,11,high
+cook-a-waffle,cake-walk-template,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+cook-a-waffle,happy-anniversary-template,"name (medium, permission_api)",0,1,0,0,2,low
+cook-a-waffle,zero-to-hero-tutorial,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+cooldevil007,Customer-Profile-API---NodeJS,"phone number (medium, permission_api); name (medium, permission_api); email (medium, permission_api)",0,3,0,0,6,medium
+CORaleigh,alexa-cor-webhook,"address (medium, conversation+permission_api)",0,1,0,1,3,low
+dabblelab,1-alexa-basic-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,10-alexa-dynamodb-datastore-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,15-alexa-apl-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,16-alexa-account-linking-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,2-alexa-remote-api-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,29-alexa-appointment-scheduler-skill,"name (medium, conversation+permission_api); email (medium, permission_api); phone number (medium, permission_api)",0,3,0,1,7,medium
+dabblelab,4-alexa-session-attributes-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,6-alexa-address-information-example-skill,"address (medium, conversation+permission_api)",0,1,0,1,3,low
+dabblelab,8-alexa-canfulfillintentrequest-example-skill,"name (medium, conversation)",0,1,0,0,2,low
+dabblelab,alexa-apl-for-audio-example,"name (medium, conversation)",0,1,0,0,2,low
+dacf,Reddit-Reads,"name (medium, conversation)",0,1,0,0,2,low
+ddlan,date.a.voice,"name (medium, permission_api)",0,1,0,0,2,low
+Dhruvj21,Alexa-Salon-Appointment-Skill,"name (medium, conversation)",0,1,0,0,2,low
+dimpscapri,Smart-Lock,"name (medium, conversation)",0,1,0,0,2,low
+DTS-STN,ServicePrototypeAlexaIntegration,"name (medium, conversation)",0,1,0,0,2,low
+dvontrec,Sprinkle-of-Alexa,"name (medium, conversation)",0,1,0,0,2,low
+EchoSkillTemplates,Alexa-API-Starter,"name (medium, conversation)",0,1,0,0,2,low
+EdwardF2,Testing-Alexa,"name (medium, conversation)",0,1,0,0,2,low
+ehelbig1,cake_walk,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+FasihAhmedRaza,alexa-client,"name (medium, conversation)",0,1,0,0,2,low
+FasihAhmedRaza,morning-mediation-alexa,"name (medium, conversation)",0,1,0,0,2,low
+fgarcialainez,Build-Engaging-Alexa-Skill-Tutorial,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+francesco-strazzullo,alexa-introduction-talk,"name (medium, permission_api)",0,1,0,0,2,low
+gouravvatadahal,Alexa_skill,"phone number (medium, conversation)",0,1,0,0,2,low
+GRy82,VoiceAppRepo,"phone number (medium, conversation)",0,1,0,0,2,low
+gurbaaz19,Alexa-Salon-Appointment,"name (medium, conversation); phone number (medium, conversation)",0,2,0,0,4,medium
+gusgad,alexa-polarcast,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+Hasi57,zerohero3,"birthday (medium, conversation)",0,1,0,0,2,low
+highclaws,Alexa,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+hrbowers,alexa-accessibility,"email (medium, conversation)",0,1,0,0,2,low
+ilikerobots,estonia-one-hundred-alexa,"name (medium, conversation)",0,1,0,0,2,low
+inobtsp,crowdsoucing_platform,"name (medium, conversation)",0,1,0,0,2,low
+inobtsp,crowdsoucing_project,"name (medium, conversation)",0,1,0,0,2,low
+Ioana-Nadia,BachelorDegree,"name (medium, conversation)",0,1,0,0,2,low
+iScreem,APL_Keyboard,"email (medium, conversation)",0,1,0,0,2,low
+juanmf,InnovationChallengeDealsAssistantAlexaSkill,"name (medium, conversation); phone number (medium, conversation)",0,2,0,0,4,medium
+juliocrn94,Happybirthday_Alexa_Skill,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+junw10,noah.care,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+jzafrap,Amazon-Alexa-Skill-For-Elrond-Account-Balance-information,"address (medium, conversation)",0,1,0,0,2,low
+katukota,ZipSkill,"name (medium, permission_api); email (medium, permission_api)",0,2,0,0,4,medium
+kenjorion,alexa_FootballBase,"location (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+Khanna20,test,"list (low, permission_api); address (medium, permission_api)",0,1,1,0,3,low
+kiranreddy1,api-starter,"name (medium, conversation)",0,1,0,0,2,low
+KiranWells,howdy-hack-alexa,"name (medium, conversation)",0,1,0,0,2,low
+Kowsalya-Balachandran,kowsalyadhanam,"name (medium, conversation)",0,1,0,0,2,low
+lefthandsimon,genericPreschooler,"age (medium, conversation); name (medium, conversation)",0,2,0,0,4,medium
+lucasagostini,NicaProject,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+LucasGauterio,alexa,"name (medium, conversation)",0,1,0,0,2,low
+maciekzdaleka,Bray-Train-Times,"name (medium, conversation)",0,1,0,0,2,low
+MegaFoodBlue,avocado-alexa,"age (medium, conversation); health (high, conversation)",1,1,0,0,6,medium
+MEHEDl,AlexaAudioPlayer,"name (medium, conversation)",0,1,0,0,2,low
+mgaringoDev,customAlexaVoiceDBConnection,"name (medium, conversation)",0,1,0,0,2,low
+mikdanjey,AlexaKyybaHappyBirthday,"birthday (medium, conversation)",0,1,0,0,2,low
+MikeAlphaXray,KaraEcho-HowdyHack-2021,"name (medium, conversation)",0,1,0,0,2,low
+minhtran2801,KS1909-Smart-Nutrition-System,"name (medium, conversation); weight (high, conversation); gender (medium, conversation); age (medium, conversation)",1,3,0,0,10,high
+MONESH-D,Alexa-1,"name (medium, conversation)",0,1,0,0,2,low
+MuhammadHamzaFarooq,Weather-App-Alexa,"location (medium, conversation)",0,1,0,0,2,low
+netdesignr,skill-resumption-demo,"location (medium, permission_api)",0,1,0,0,2,low
+Nickeem,AlexaVisitorSkill,"name (medium, conversation); phone number (medium, conversation)",0,2,0,0,4,medium
+nicktodd,BasicAlexaSkill,"name (medium, conversation)",0,1,0,0,2,low
+nithinkumarhere,srskills,"email (medium, conversation+permission_api); location (medium, conversation)",0,2,0,1,5,medium
+nlhien,alexa-diana-alarm,"location (medium, permission_api)",0,1,0,0,2,low
+oddguan,highmark-alexa,"name (medium, conversation); address (medium, conversation)",0,2,0,0,4,medium
+oliver9321,memberCareAssistance,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+pearlandrw,car-go,"name (medium, conversation)",0,1,0,0,2,low
+PedroFeitosa,essilor-cosmo,"age (medium, conversation)",0,1,0,0,2,low
+Peter-Aloisi-PFG,Reinhart_FoodService,"email (medium, conversation)",0,1,0,0,2,low
+phoebe-assistant,dynamo-cards,"name (medium, conversation)",0,1,0,0,2,low
+Preeti728,SoftWidget,"name (medium, conversation); address (medium, conversation)",0,2,0,0,4,medium
+qihengchen,alexa-skills,"name (medium, permission_api); financial (high, permission_api)",1,1,0,0,6,medium
+queirozsc,Alexa-Workshop,"name (medium, conversation); health (high, conversation)",1,1,0,0,6,medium
+rahulyadav360,25-alexa-sendgrid-subscriber-skill,"email (medium, conversation+permission_api); name (medium, permission_api)",0,2,0,1,5,medium
+raquelfishes,alexaSkill,"birthday (medium, conversation)",0,1,0,0,2,low
+renatospaka,zero-2-hero,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+rneiva,Astronautas,"name (medium, conversation)",0,1,0,0,2,low
+robm26,travel-browser,"name (medium, conversation); phone number (medium, conversation); location (medium, conversation)",0,3,0,0,6,medium
+saadeddinne,test,"name (medium, conversation)",0,1,0,0,2,low
+SDC-Lab,AlexaNutrition,"weight (high, conversation); gender (medium, conversation); name (medium, conversation); age (medium, conversation)",1,3,0,0,10,high
+Sethlimlee,AlexaCakeTimeSkill,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
+shailsur-2021,alexa,"email (medium, permission_api)",0,1,0,0,2,low
+shivangi4742,Myalexaskill,"name (medium, conversation)",0,1,0,0,2,low
+sifahad-amzn,driving-directions,"location (medium, conversation+permission_api); address (medium, permission_api)",0,2,0,1,5,medium
+singha53-zz,omics-bioanalytics-alexa-skill,"phone number (medium, conversation)",0,1,0,0,2,low
+smart-city-hack,sch-skill,"location (medium, permission_api)",0,1,0,0,2,low
+Smarto-Dev,prof,"phone number (medium, permission_api); name (medium, permission_api); email (medium, permission_api)",0,3,0,0,6,medium
+steveoh,alexa-how-high-am-i,"address (medium, conversation+permission_api)",0,1,0,1,3,low
+SuneetPatil,Alexa-Basic-Welcome,"name (medium, conversation)",0,1,0,0,2,low
+TajSinghESGI,AlexaCurrency,"name (medium, permission_api); location (medium, permission_api); list (low, permission_api)",0,2,1,0,5,medium
+TeamCodebreakers,idk_source,"address (medium, conversation+permission_api); phone number (medium, conversation+permission_api); name (medium, conversation+permission_api); location (medium, conversation)",0,4,0,1,9,high
+thierryh9,RocketElevators-AI,"name (medium, conversation)",0,1,0,0,2,low
+tingiris,starter-demo-two,"name (medium, conversation)",0,1,0,0,2,low
+umoazzam,covid_tracker_dubhacks_2020,"name (medium, conversation); location (medium, conversation); address (medium, permission_api)",0,3,0,1,7,medium
+ValBeaupre,RocketElevators-AI,"name (medium, conversation)",0,1,0,0,2,low
+Ventrosky,starport-75,"name (medium, permission_api)",0,1,0,0,2,low
+venztech103,api-reminder,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
+vpayette,skill-sample-node-device-location-api,"location (medium, conversation+permission_api)",0,1,0,1,3,low
+wrongholt,Rainbow-Words,"name (medium, conversation)",0,1,0,0,2,low
+wrongholt,Space-Marauders,"name (medium, conversation+permission_api); email (medium, permission_api); phone number (medium, permission_api)",0,3,0,1,7,medium
+xengravity,amazon-pay-alexa-v2-demo,"email (medium, conversation); address (medium, conversation); financial (high, permission_api)",1,2,0,1,9,high
+xicoder96,psys-quiz-game-alexa-skill,"name (medium, permission_api)",0,1,0,0,2,low
+YextSolutions,answers-and-alexa,"location (medium, conversation)",0,1,0,0,2,low

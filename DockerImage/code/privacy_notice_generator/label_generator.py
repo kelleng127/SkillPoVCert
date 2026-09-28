@@ -193,8 +193,8 @@ P = {
     "danger":     "#F85149",
     "danger_dim": "#3D0C0A",
     "text":       "#E6EDF3",
-    "text2":      "#8B949E",
-    "text3":      "#484F58",
+    "text2":      "#C9D1D9",
+    "text3":      "#9DA7B3",
     "white":      "#FFFFFF",
 }
 
