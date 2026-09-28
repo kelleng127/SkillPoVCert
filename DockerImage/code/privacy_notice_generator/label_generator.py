@@ -47,6 +47,7 @@ _here        = os.path.dirname(os.path.abspath(__file__))
 _root        = os.path.dirname(os.path.dirname(os.path.dirname(_here)))
 _dataset     = os.path.join(_root, "dataset")
 FINAL_PATH   = os.path.join(_dataset, "data_collection_results", "final")
+RESULTS_PATH = os.path.join(_dataset, "results")
 LABELS_PATH  = os.path.join(_dataset, "labels")
 
 # Subdirectories split by risk classification
@@ -229,12 +230,32 @@ def icon_for(dt):
 # STEP 1 – discover skills
 # ─────────────────────────────────────────────────────────────────────────────
 def discover_skills():
+    """
+    Every analyzed skill has a folder in results/, but filter_data_collection
+    deletes empty final/ reports, so skills with no data collection have no
+    report. Build the list from results/ and give those skills report_path
+    None, which labels them as collecting nothing (risk level "none").
+    """
     if not os.path.isdir(FINAL_PATH):
         sys.exit(
             f"[ERROR] final/ folder not found at {FINAL_PATH}.\n"
             "Run scan_skills.py then main.py first."
         )
-    skills = []
+    skills = {}
+    if os.path.isdir(RESULTS_PATH):
+        for folder in os.listdir(RESULTS_PATH):
+            if not os.path.isdir(os.path.join(RESULTS_PATH, folder)):
+                continue
+            # same author/skill split as filter_data_collection.get_author_skill
+            parts = folder.split("~")
+            if len(parts) < 2:
+                continue
+            author, skill = parts[-2], parts[-1]
+            skills[(author, skill)] = {
+                "author":      author,
+                "skill":       skill,
+                "report_path": None,
+            }
     for fname in os.listdir(FINAL_PATH):
         if not fname.endswith("~~report.txt"):
             continue
@@ -243,12 +264,12 @@ def discover_skills():
         if len(parts) < 2:
             continue
         author, skill = parts[0], parts[1]
-        skills.append({
+        skills[(author, skill)] = {
             "author":      author,
             "skill":       skill,
             "report_path": os.path.join(FINAL_PATH, fname),
-        })
-    return skills
+        }
+    return list(skills.values())
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 2 – parse the normalized report (deterministic)
@@ -558,7 +579,7 @@ def draw_label(skill_name, author, analysis, risk_level, risk_score, out_path):
          P["warn"] if tier_counts["medium"] else P["text3"]),
         (f"{tier_counts['low']}  low-sensitivity  (×1 pt each)",
          P["blue"] if tier_counts["low"] else P["text3"]),
-        (f"Total score: {risk_score}  →  {risk_level.upper()} RISK",
+        (f"Total score: {risk_score}  →  {rl}",
          rc),
     ]
 
@@ -676,10 +697,10 @@ def main():
         author, skill_name = s["author"], s["skill"]
         print(f"Processing: {author} / {skill_name}")
 
-        report_text = open(s["report_path"]).read().strip()
-        if not report_text:
-            print("  [SKIP] Empty report.")
-            continue
+        report_text = ""
+        if s["report_path"]:
+            with open(s["report_path"]) as f:
+                report_text = f.read().strip()
 
         data_types, methods = parse_report(report_text)
         risk_score, risk_level = score_risk(data_types, methods)

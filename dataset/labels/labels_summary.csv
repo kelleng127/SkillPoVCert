@@ -1,12 +1,20 @@
 author,skill,data_types,n_high,n_medium,n_low,both_channels,risk_score,risk_level
+07jeancms,skill-trivia,,0,0,0,0,0,none
 0xDebabrata,alexa-covid19-tracker,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
 0xDebabrata,alexa-covid19-trackeralexa-covid19-tracker,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+13thontheleft,test-audioplayer,,0,0,0,0,0,none
+1onder,Quantum,,0,0,0,0,0,none
 3unyt,Alexa-Intern-Helper,"name (medium, conversation+permission_api); email (medium, permission_api)",0,2,0,1,5,medium
 aarjo,alexa-league-rank-finder,"name (medium, conversation)",0,1,0,0,2,low
 aaronkh,bobafetch-alexa,"name (medium, permission_api); financial (high, permission_api)",1,1,0,0,6,medium
 AbhinavTuli,Apartments-Finder,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
 AbhinavTuli,Foodie-Index,"name (medium, conversation); location (medium, conversation)",0,2,0,0,4,medium
+acucciniello,business-bear,,0,0,0,0,0,none
+adithyabhonsley,Fizz-Buzz,,0,0,0,0,0,none
+AdrianGlez18,Curiosidades-historicas-en-Alexa,,0,0,0,0,0,none
+aespringfield,seconds,,0,0,0,0,0,none
 aflorithmic,alexa,"name (medium, conversation)",0,1,0,0,2,low
+agrygo99,MyTarotCard,,0,0,0,0,0,none
 ahsanali17,RocketElevators-AI-Alexa,"name (medium, conversation)",0,1,0,0,2,low
 ak1132,RedditDealsSkill,"name (medium, permission_api)",0,1,0,0,2,low
 alexa-samples,dynamic-location-demo,"location (medium, conversation+permission_api)",0,1,0,1,3,low
@@ -75,6 +83,8 @@ inobtsp,crowdsoucing_platform,"name (medium, conversation)",0,1,0,0,2,low
 inobtsp,crowdsoucing_project,"name (medium, conversation)",0,1,0,0,2,low
 Ioana-Nadia,BachelorDegree,"name (medium, conversation)",0,1,0,0,2,low
 iScreem,APL_Keyboard,"email (medium, conversation)",0,1,0,0,2,low
+jsetton,alexa-aftership,,0,0,0,0,0,none
+jsetton,alexa-assistant,,0,0,0,0,0,none
 juanmf,InnovationChallengeDealsAssistantAlexaSkill,"name (medium, conversation); phone number (medium, conversation)",0,2,0,0,4,medium
 juliocrn94,Happybirthday_Alexa_Skill,"birthday (medium, conversation); name (medium, permission_api)",0,2,0,1,5,medium
 junw10,noah.care,"age (medium, conversation); birthday (medium, conversation)",0,2,0,0,4,medium
@@ -125,6 +135,7 @@ sifahad-amzn,driving-directions,"location (medium, conversation+permission_api);
 singha53-zz,omics-bioanalytics-alexa-skill,"phone number (medium, conversation)",0,1,0,0,2,low
 smart-city-hack,sch-skill,"location (medium, permission_api)",0,1,0,0,2,low
 Smarto-Dev,prof,"phone number (medium, permission_api); name (medium, permission_api); email (medium, permission_api)",0,3,0,0,6,medium
+stevenbeales,pain-diary,,0,0,0,0,0,none
 steveoh,alexa-how-high-am-i,"address (medium, conversation+permission_api)",0,1,0,1,3,low
 SuneetPatil,Alexa-Basic-Welcome,"name (medium, conversation)",0,1,0,0,2,low
 TajSinghESGI,AlexaCurrency,"name (medium, permission_api); location (medium, permission_api); list (low, permission_api)",0,2,1,0,5,medium
@@ -141,3 +152,4 @@ wrongholt,Space-Marauders,"name (medium, conversation+permission_api); email (me
 xengravity,amazon-pay-alexa-v2-demo,"email (medium, conversation); address (medium, conversation); financial (high, permission_api)",1,2,0,1,9,high
 xicoder96,psys-quiz-game-alexa-skill,"name (medium, permission_api)",0,1,0,0,2,low
 YextSolutions,answers-and-alexa,"location (medium, conversation)",0,1,0,0,2,low
+zanemx,what-can-i-grow,,0,0,0,0,0,none
