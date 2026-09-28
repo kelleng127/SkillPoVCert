@@ -1,6 +1,6 @@
 # SkillCert
 
-![SkillCert Pipeline](images/image.png)
+![SkillCert Pipeline](image.png)
 # Instructions
 
 * Place your own openai api key in Line 6 of /DockerImage/code/privacy_notice_generator/chatGPT_summary.py
